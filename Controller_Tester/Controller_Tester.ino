@@ -3,6 +3,7 @@ int up = 6;
 int right = 5;
 int down = 4;
 unsigned int coords[] = {0,0};
+int changed = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -16,12 +17,28 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(digitalRead(left)) coords[0] += 1;
-  if(digitalRead(right)) coords[0] -= 1;
-  if(digitalRead(up)) coords[1] += 1;
-  if(digitalRead(down)) coords[1] -= 1;
+  
+  if(!digitalRead(left)){ 
+    coords[0] -= 1;
+    changed = 1;
+  }
+  if(!digitalRead(right)){ 
+    coords[0] += 1;
+    changed = 1;
+  }
+  if(!digitalRead(up)){ 
+    coords[1] -= 1;
+    changed = 1;
+  }
+  if(!digitalRead(down)){ 
+    coords[1] += 1;
+    changed = 1;
+  }
 
-  SendCoords();
+  if(changed){
+    SendCoords();
+    changed = 0;
+  }
 
   delay(100);
 }
@@ -39,5 +56,7 @@ void SendCoords()
   Serial.write(byte);
   byte = coords[1] / 256;
   Serial.write(byte);
+
+
 
 }
