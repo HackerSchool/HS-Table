@@ -1,8 +1,11 @@
 import numpy as np
 from math import factorial, comb
-from scipy import ndimage
+# from scipy import ndimage
 from itertools import combinations
+import matplotlib.pyplot as plt 
+from random import randint
 
+RAMDOM = True
 
 def coordenadas():
     n = int(input("Quantos LEDS há? "))
@@ -13,12 +16,20 @@ def coordenadas():
 
     #Obtenção das coordenadas dos LEDs e das respetivas sombras
     for i in range(n):
-        coordleds[i][0] = input("Qual a coordenada x do LED " + str(i+1) + "?: ")
-        coordleds[i][1] = input("Qual a coordenada y do LED " + str(i+1) + "?: ")
+        if RAMDOM:
+            coordleds[i][0] = randint(-1000, 1000)
+            coordleds[i][1] = 0
+        else:
+            coordleds[i][0] = input("Qual a coordenada x do LED " + str(i+1) + "?: ")
+            coordleds[i][1] = input("Qual a coordenada y do LED " + str(i+1) + "?: ")
         print("LED " + str(i+1) + ": ( " + str(coordleds[i][0]) + " , " + str(coordleds[i][1]) + " ) \n")
 
-        coordsombra[i][0] = input("Qual é a coordenada x do ponto médio da sombra do LED " + str(i+1) + "?: ")
-        coordsombra[i][1] = input("Qual é a coordenada y do ponto médio da sombra do LED " + str(i+1) + "?: ")
+        if RAMDOM:
+            coordsombra[i][0] = randint(-1000, 1000)
+            coordsombra[i][1] = 1000
+        else:
+            coordsombra[i][0] = input("Qual é a coordenada x do ponto médio da sombra do LED " + str(i+1) + "?: ")
+            coordsombra[i][1] = input("Qual é a coordenada y do ponto médio da sombra do LED " + str(i+1) + "?: ")
         print("Sombra do LED " + str(i+1) + ": ( " + str(coordsombra[i][0]) + " , " + str(coordsombra[i][1]) + ") \n")
 
     print("Coordenadas das LEDs:")
@@ -59,14 +70,30 @@ def calcularIntersecao(n, comb_m, comb_b):
         print(coordX[k], coordY[k])
     intersecao_retas = ((sum(coordX)/comb(n,2)), (sum(coordY)/comb(n,2)))  #Cálculo da média de todos os pontos obtidos (centróide)
 
-    return intersecao_retas
+    return intersecao_retas, coordX, coordY
+
+def PlotResult(n, m, b, intersecao, coordX, coordY):
+    x = np.linspace(min(coordX),max(coordX))
+
+    for i in range(0, n):
+        y = m[i]*x + b[i]
+
+        plt.plot(x, y)
+
+    plt.plot(intersecao[0], intersecao[1], "bo")
+
+    plt.plot(coordX, coordY, "go")
+
+    plt.show()
+
 
 
 def main():
     n, coordleds, coordsombra = coordenadas()
     m, b = definirRetas(n, coordleds, coordsombra)
     comb_m, comb_b = Combinacoes(m, b)
-    intersecao_retas = calcularIntersecao(n, comb_m, comb_b)
+    intersecao_retas, coordX, coordY = calcularIntersecao(n, comb_m, comb_b)
     print("A coordenada de interseção das retas é: " + str(intersecao_retas))
+    PlotResult(n, m, b, intersecao_retas, coordX, coordY)
 
 main()
