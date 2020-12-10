@@ -1,14 +1,12 @@
 import numpy as np
-from math import factorial, comb
-# from scipy import ndimage
-from itertools import combinations
-import matplotlib.pyplot as plt 
+from math import comb
+import matplotlib.pyplot as plt
 from random import randint
 
 RAMDOM = True
 
 def coordenadas():
-    n = int(input("Quantos LEDS há? "))
+    n = int(input("Quantos LEDs há?: "))
 
     #Dimensão das matrizes das coordenadas dos LEDs e das Sombras
     coordleds = np.zeros((n,2))
@@ -32,11 +30,6 @@ def coordenadas():
             coordsombra[i][1] = input("Qual é a coordenada y do ponto médio da sombra do LED " + str(i+1) + "?: ")
         print("Sombra do LED " + str(i+1) + ": ( " + str(coordsombra[i][0]) + " , " + str(coordsombra[i][1]) + ") \n")
 
-    print("Coordenadas das LEDs:")
-    print(str(coordleds) + "\n")
-    print("Coordenadas das sombras: ")
-    print(str(coordsombra) + "\n")
-
     return n, coordleds, coordsombra
 
 def definirRetas(n, coordleds, coordsombra):
@@ -48,41 +41,44 @@ def definirRetas(n, coordleds, coordsombra):
         b[j] = coordleds[j][1] - m[j] * coordleds[j][0]  # y = mx + b (=) b = y - mx
         print("Função para o LED " + str(j + 1) + ": y = " + str(m[j]) + "x + " + str(b[j]))
 
+    print(m)
     return m, b
 
-def Combinacoes(m, b): #Retorna uma lista de todas as combinações para m e b
-    comb_m = list(combinations(m,2))
-    comb_b = list(combinations(b,2))
-    print(comb_m)
-    print(comb_b)
 
-    return comb_m, comb_b
-
-
-def calcularIntersecao(n, comb_m, comb_b):
+def calcularIntersecao(n, m, b):
     #Dimensão das matrizes das coordenadas de interseção de 2 retas
-    coordX = np.zeros(comb(n,2))
-    coordY = np.zeros(comb(n,2))
+    coordX = np.zeros((n-1,n))
+    coordY = np.zeros((n-1,n))
 
-    for k in range(comb(n,2)): #Obtenção das coordenadas x e y da interseção entre 2 retas
-        coordX[k] = (comb_b[k][1] - comb_b[k][0]) / (comb_m[k][0] - comb_m[k][1])  # y = m1*x+b1 & y = m2*x+b2 (=) m1*x+b1 = m2*x+b2 (=) x = (b2 - b1) / (m1 - m2)
-        coordY[k] = (((comb_m[k][0] * coordX[k]) + comb_b[k][0]) + ((comb_m[k][1] * coordX[k]) + comb_b[k][1])) / 2  #Média: (y1 + y2) / 2
-        print(coordX[k], coordY[k])
-    intersecao_retas = ((sum(coordX)/comb(n,2)), (sum(coordY)/comb(n,2)))  #Cálculo da média de todos os pontos obtidos (centróide)
+    CoordX = 0
+    CoordY = 0
 
-    return intersecao_retas, coordX, coordY
+    for i in range(n): #Obtenção das coordenadas x e y da interseção entre 2 retas
+        for j in range(i+1,n):
+            coordX[i][j] = (b[j] - b[i]) / (m[i] - m[j])  # y = m1*x+b1 & y = m2*x+b2 (=) m1*x+b1 = m2*x+b2 (=) x = (b2 - b1) / (m1 - m2)
+            coordY[i][j] = (((m[i] * coordX[i][j]) + b[i]) + ((m[j] * coordX[i][j]) + b[j])) / 2  #Média: (y1 + y2) / 2
+            print(str(i), str(j), coordX[i][j], coordY[i][j])
+
+            CoordX += coordX[i][j]
+            CoordY += coordY[i][j]
+
+    intersecao = (CoordX/comb(n,2)), (CoordY/comb(n,2))  #Cálculo da média de todos os pontos obtidos (centróide)
+
+    return intersecao, coordX, coordY
+
 
 def PlotResult(n, m, b, intersecao, coordX, coordY):
-    x = np.linspace(min(coordX),max(coordX))
+    x = np.linspace(np.min(coordX) - 50,np.max(coordX) + 50)
 
     for i in range(0, n):
         y = m[i]*x + b[i]
-
         plt.plot(x, y)
 
-    plt.plot(intersecao[0], intersecao[1], "bo")
+    for i in range(n):
+        for j in range(i+1,n):
+            plt.plot(coordX[i][j], coordY[i][j], "go")
 
-    plt.plot(coordX, coordY, "go")
+    plt.plot(intersecao[0], intersecao[1], "bo")
 
     plt.show()
 
@@ -91,9 +87,8 @@ def PlotResult(n, m, b, intersecao, coordX, coordY):
 def main():
     n, coordleds, coordsombra = coordenadas()
     m, b = definirRetas(n, coordleds, coordsombra)
-    comb_m, comb_b = Combinacoes(m, b)
-    intersecao_retas, coordX, coordY = calcularIntersecao(n, comb_m, comb_b)
-    print("A coordenada de interseção das retas é: " + str(intersecao_retas))
-    PlotResult(n, m, b, intersecao_retas, coordX, coordY)
+    intersecao, coordX, coordY = calcularIntersecao(n, m, b)
+    print("A coordenada de interseção das retas é: " + str(intersecao))
+    PlotResult(n, m, b, intersecao, coordX, coordY)
 
 main()
