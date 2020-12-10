@@ -28,7 +28,7 @@ int DefineLine() {
     int coordled[nLeds][2];
     int coordshadow[nLeds][2];
     
-    for (int i = 0; i < nLeds; i++) {
+    for (int i = 0; i < nLeds; i++){
       coordled[i][0] = random(-1000,1000);
       coordled[i][1] = 0;
       coordshadow[i][0] = random(-1000,1000);
@@ -40,18 +40,18 @@ int DefineLine() {
 }
 
 int LineIntersection() {
-    int coordX[combinations];
-    int coordY[combinations];
+    int coordX[nLeds-1][nLeds];
+    int coordY[nLeds-1][nLeds];
     int CoordX = 0;
     int CoordY = 0;
-    
+
     for(int i = 0; i < nLeds; i++){       // n
       for(int j = i+1; j < nLeds; j++){   // n-i-1
-        coordX[i] = (b[j] - b[i]) / (m[j] - m[i]);
-        coordY[i] = ((m[i]*coordX[i] + b[i]) + ((m[j]*coordX[i]) + b[j])) / 2;
+        coordX[i][j] = (b[j] - b[i]) / (m[i] - m[j]);
+        coordY[i][j] = ((m[i]*coordX[i][j] + b[i]) + ((m[j]*coordX[i][j]) + b[j])) / 2;
 
-        CoordX += coordX[i];
-        CoordY += coordY[i];
+        CoordX += coordX[i][j];
+        CoordY += coordY[i][j];
       }
     }
 
