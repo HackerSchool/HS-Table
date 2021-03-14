@@ -1,39 +1,129 @@
-NPLAYERS = 2
-BOARDSIZE = 3
+# -*- coding: utf-8 -*-
+import pygame
+from math import *
+pygame.init()
 
-# create the board
-Board = [-1 for i in range(0,BOARDSIZE * BOARDSIZE)]
+NPLAYERS = 9             # definir o nº de jogadores
+BOARDSIZE = 9          # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
 
-def Play(player, spot):
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+LARGURA = 700
+ALTURA = 500
+
+dist = int ((ALTURA-100)/BOARDSIZE)          # distância entre duas linhas consecutivas (lado do quadrado)
+
+if BOARDSIZE//2 != 0:
+    xo = int ((LARGURA/2)-(dist/2)-((dist*(BOARDSIZE-3)/2))) # x da primeira linha vertical quando BOARDSIZE é ímpar
+    yo = int ((ALTURA/2)-(dist/2)-((dist*(BOARDSIZE-3)/2))) # y da primeira linha vertical quando BOARDSIZE é ímpar
+else:
+    xo = int ((LARGURA/2) - (dist*(BOARDSIZE-2)/2)) # x da primeira linha vertical quando BOARDSIZE é par
+    yo = int ((ALTURA/2) - (dist*(BOARDSIZE-2)/2)) # y da primeira linha vertical quando BOARDSIZE é par
+
+# create the board (matriz BOARDSIZE x BOARDSIZE)
+Board=[]
+for i in range (BOARDSIZE):
+    Board.append([-1 for i in range(BOARDSIZE)])
+
+def makescreen():
+    """ Inicializa o screen com a grade de jogo"""
+    
+    screen = pygame.display.set_mode((LARGURA,ALTURA))
+    pygame.display.set_caption ("Jogo do Galo")
+    screen.fill(WHITE)
+    
+    for i in range (BOARDSIZE-1):
+            pygame.draw.line (screen, BLACK, ((xo + (dist*i)), 50) ,((xo + (dist*i)),(ALTURA-50)),10) # linhas horizontais 
+            pygame.draw.line (screen, BLACK, ((xo - dist), (yo + (dist*i))), ((xo + (BOARDSIZE-1)*dist),(yo + (dist*i))), 10) #linhas verticais
+    
+    return screen
+
+def convert(pos):
+    x = xo
+    y = yo
+                 
+    for c in range (BOARDSIZE): # percorrer todas as colunas
+        if (pos[0] < x) or (c==BOARDSIZE-1): 
+            for l in range(BOARDSIZE):
+                if pos[1] < y:
+                    break
+                else:
+                    y = y + dist # incrementar y para a próxima linha
+            break     
+        else:
+            x = x + dist # incrementar x para a próxima coluna
+            
+    return c,l
+
+def shapes(screen,player,c,l):
+    
+    # coordenadas do centro do quadrado
+    xc = int(xo + (c*dist) - (dist/2)) 
+    yc = int(yo + (l*dist) - (dist/2))
+    
+    # player 0: desenhar a cruz
+    if player == 0:
+        pygame.draw.line(screen, BLACK,(int(xc-(dist/2)+15),int(yc-(dist/2)+15)),
+                                       (int(xc+(dist/2)-15),int(yc+(dist/2)-15)),5)
+        pygame.draw.line(screen, BLACK,(int(xc-(dist/2)+15),int(yc+(dist/2)-15)),
+                                       (int(xc+(dist/2)-15),int(yc-(dist/2)+15)),5)
+   
+    # player 1: desenhar a bola
+    elif player == 1:
+        pygame.draw.circle(screen, BLACK, (xc,yc), int((dist/2)-15))
+        pygame.draw.circle(screen,WHITE,(xc,yc),int((dist/2)-19))
+        
+    else:
+    # player n: desenhar poligno com n+1 lados (ex.: player 2 -> triângulo)   
+        points = []
+        a = (2*pi)/(player+1)
+        raio = int((dist/2)-10)
+        points.append((xc,yc-raio))
+        for i in range (player):
+            y = int(yc - (raio * sin(a+(pi/2)+a*i)))
+            x = int(xc + (raio * cos(a+(pi/2)+a*i)))
+            points.append((x,y))
+        pygame.draw.polygon(screen,BLACK,points,5)
+        
+    
+def Play(w,player, c,l):
     """ Handles a player play """
 
     # tried to play on not empty spot
-    if Board[spot] != -1:
+    if Board[c][l] != -1:
         return False
 
     else:
-        Board[spot] = player
-        # adicionar codigo para desenhar cruz/bola
+        Board[c][l] = player
+        # adicionar codigo para desenhar cruz/bola 
+        shapes(w, player,c,l)
         return True
 
 def main():
     player = 0
-    # adicionar o codigo para o pygame
+    w = makescreen() #cria a janela de jogo
 
     # game loop
-    while True:
-        print(Board)
-
-        spot = int(input()) # receber o input
-        # por a receber o input do rato/touch
-        # converter as coords para uma das posições
-
-        if Play(player, spot):
-            # if played on valid spot increment player
-            player += 1
-
-            if player >= NPLAYERS:
-                player = 0
+    sair = False
+    while not sair:
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sair = True
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                c,l = convert(pos)
+                
+                if Play(w,player, c,l):
+                    # if played on valid spot increment player
+                    player += 1
+        
+                    if player >= NPLAYERS:
+                        player = 0
+                        
+                
 
 if __name__ == "__main__":
     main()
