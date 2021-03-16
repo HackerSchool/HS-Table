@@ -47,15 +47,10 @@ SETTINGS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 
                            ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
                            ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
 
-NUM_PLAYERS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 5 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 7 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 9 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 11 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.4, SCREEN_HEIGHT * 5 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.4, SCREEN_HEIGHT * 7 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.4, SCREEN_HEIGHT * 9 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.4, SCREEN_HEIGHT * 11 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
-                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 10 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
+NUM_PLAYERS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2.28, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.16, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
 
 NUM_ROUNDS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2.28, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
                              ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.16, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
@@ -107,14 +102,23 @@ def button(text, x, y, w, h, click, inactive_button = LIGHT_GREEN, active_button
 #NUMBER OF PLAYERS MENU
 def setup_nplayers_menu():
     SCREEN.fill(GREY)
-    text_surf, text_rectangle = text_objects('Select the number of players...', LARGE_TEXT, WHITE)
-    text_rectangle.center = ((SCREEN_WIDTH // 4), (SCREEN_HEIGHT // 5))
+    
+    text_surf, text_rectangle = text_objects('Select the number of players (max of 9) ...', LARGE_TEXT, WHITE)
+    text_rectangle.center = ((SCREEN_WIDTH // 3.27), (SCREEN_HEIGHT // 5))
     SCREEN.blit(text_surf, text_rectangle)
     
     pygame.display.update()
 
 def nplayers_menu():
     setup_nplayers_menu()
+
+    def choose_players(players_display):
+        pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH // 2.72), int(SCREEN_HEIGHT * 4 // 12), int(SCREEN_WIDTH * 0.8 // 3), int(70)), int(1))
+        pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH // 2.66), int(SCREEN_HEIGHT * 4.1 // 12), int(SCREEN_WIDTH * 0.75 // 3), int(85 / 1440 * SCREEN_HEIGHT)))
+
+        text_surf, text_rectangle = text_objects(str(players_display), LABEL_TEXT, WHITE)
+        text_rectangle.center = (int(SCREEN_WIDTH // 2), int(SCREEN_HEIGHT // 2.67))
+        SCREEN.blit(text_surf, text_rectangle)
 
     def changes_done(numplayers):
         pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
@@ -123,7 +127,7 @@ def nplayers_menu():
         text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
         SCREEN.blit(text_surf, text_rectangle)
 
-
+    num_players = 2
     nplayersmenu = True
     while nplayersmenu:
         click = False
@@ -134,58 +138,40 @@ def nplayers_menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
-        if button('2  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[0], click):
-            NPLAYERS = 2
-            BOARDSIZE = 2
+        choose_players(num_players)
+        if button(' - ', *NUM_PLAYERS_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
-            changes_done(2)
-
-        if button('3  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[1], click):
-            NPLAYERS = 3
-            BOARDSIZE = 3
-            pygame.time.delay(100)
-            changes_done(3)
-
-        if button('4  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[2], click):
-            NPLAYERS = 4
-            BOARDSIZE = 4
-            pygame.time.delay(100)
-            changes_done(4)
-
-        if button('5  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[3], click):
-            NPLAYERS = 5
-            BOARDSIZE = 5
-            pygame.time.delay(100)
-            changes_done(5)
-
-        if button('6  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[4], click):
-            NPLAYERS = 6
-            BOARDSIZE = 6
-            pygame.time.delay(100)
-            changes_done(6)
             
-        if button('7  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[5], click):
-            NPLAYERS = 7
-            BOARDSIZE = 7
-            pygame.time.delay(100)
-            changes_done(7)
+            if num_players <= 2:
+                pass
 
-        if button('8  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[6], click):
-            NPLAYERS = 8
-            BOARDSIZE = 8
-            pygame.time.delay(100)
-            changes_done(8)
+            elif num_players > 1:
+                num_players -= 1
 
-        if button('9  P L A Y E R S', *NUM_PLAYERS_BUTTONS_LAYOUT[7], click):
-            NPLAYERS = 9
-            BOARDSIZE = 9
-            pygame.time.delay(100)
-            changes_done(9)
+            choose_players(num_players)
 
-        elif button('R E T U R N', *NUM_PLAYERS_BUTTONS_LAYOUT[8], click):
+        elif button(' + ', *NUM_PLAYERS_BUTTONS_LAYOUT[1], click):
+            pygame.time.delay(100)
+            
+            if num_players >= 9:
+                pass
+
+            elif num_players < 9:
+                num_players += 1
+
+            choose_players(num_players)
+
+        elif button('C O N F I R M ', *NUM_PLAYERS_BUTTONS_LAYOUT[2], click):
+            pygame.time.delay(100)
+            NPLAYERS = int(num_players)
+            BOARDSIZE = int(num_players)
+
+            changes_done(NPLAYERS)
+
+        elif button('R E T U R N', *NUM_PLAYERS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
             settings_menu()
-        
+
         pygame.display.update(NUM_PLAYERS_BUTTONS_LAYOUT)
 
     return NPLAYERS, BOARDSIZE
