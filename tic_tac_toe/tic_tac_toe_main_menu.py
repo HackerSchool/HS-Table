@@ -36,9 +36,16 @@ else:
 BUTTON_WIDTH = int(SCREEN_WIDTH * 0.8 // 3)
 BUTTON_HEIGHT = int(SCREEN_HEIGHT * 5 // 55)
 
+SMALL_BUTTON_WIDTH = int(70)
+SMALL_BUTTON_HEIGHT = int(70)
+
 MAIN_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 5 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
                        ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
-                       ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)] 
+                       ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
+
+SETTINGS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 5 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                           ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                           ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
 
 NUM_PLAYERS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 5 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
                               ((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIGHT * 7 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
@@ -50,6 +57,11 @@ NUM_PLAYERS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 3.5, SCREEN_HEIG
                               ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.4, SCREEN_HEIGHT * 11 // 16, BUTTON_WIDTH, BUTTON_HEIGHT),
                               ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 10 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
 
+NUM_ROUNDS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2.28, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 1.16, SCREEN_HEIGHT * 4 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_WIDTH),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                             ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
+
 #Create texts
 MAIN_MENU_TEXT = pygame.font.Font(FONT_ORIGAMI, int(115 / 1080 * SCREEN_HEIGHT))
 MENU_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(115 / 1080 * SCREEN_HEIGHT))
@@ -58,6 +70,7 @@ MEDIUM_TEXT = pygame.font.Font(FONT_RAJDHANI, int(45 / 1440 * SCREEN_HEIGHT))
 MEDIUM_BOLD_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(45 / 1440 * SCREEN_HEIGHT))
 SMALL_TEXT = pygame.font.Font(FONT_RAJDHANI, int(35 / 1440 * SCREEN_HEIGHT))
 SMALL_BOLD_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(35 / 1440 * SCREEN_HEIGHT))
+LABEL_TEXT = pygame.font.Font(FONT_RAJDHANI, int(85 / 1440 * SCREEN_HEIGHT))
 
 
 #BUTTONS AND TEXTS FUNCTIONS
@@ -91,8 +104,8 @@ def button(text, x, y, w, h, click, inactive_button = LIGHT_GREEN, active_button
     pygame.display.update()
     return button_clicked
 
-#SETTINGS MENU
-def setup_settings_menu():
+#NUMBER OF PLAYERS MENU
+def setup_nplayers_menu():
     SCREEN.fill(GREY)
     text_surf, text_rectangle = text_objects('Select the number of players...', LARGE_TEXT, WHITE)
     text_rectangle.center = ((SCREEN_WIDTH // 4), (SCREEN_HEIGHT // 5))
@@ -100,8 +113,8 @@ def setup_settings_menu():
     
     pygame.display.update()
 
-def settings_menu():
-    setup_settings_menu()
+def nplayers_menu():
+    setup_nplayers_menu()
 
     def changes_done(numplayers):
         pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
@@ -111,10 +124,9 @@ def settings_menu():
         SCREEN.blit(text_surf, text_rectangle)
 
 
-    num_players_screen = True
-    while num_players_screen:
+    nplayersmenu = True
+    while nplayersmenu:
         click = False
-        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -172,11 +184,120 @@ def settings_menu():
 
         elif button('R E T U R N', *NUM_PLAYERS_BUTTONS_LAYOUT[8], click):
             pygame.time.delay(100)
-            main_menu()
+            settings_menu()
         
         pygame.display.update(NUM_PLAYERS_BUTTONS_LAYOUT)
 
     return NPLAYERS, BOARDSIZE
+
+#NUMBER OF ROUNDS MENU
+def setup_nrounds_menu():
+    SCREEN.fill(GREY)
+
+    text_surf, text_rectangle = text_objects('Select the number of rounds...', LARGE_TEXT, WHITE)
+    text_rectangle.center = ((SCREEN_WIDTH // 4), (SCREEN_HEIGHT // 5))
+    SCREEN.blit(text_surf, text_rectangle)
+    
+    pygame.display.update()
+
+def nrounds_menu():
+    setup_nrounds_menu()
+
+    def choose_rounds(rounds_display):
+        pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH // 2.72), int(SCREEN_HEIGHT * 4 // 12), int(SCREEN_WIDTH * 0.8 // 3), int(70)), int(1))
+        pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH // 2.66), int(SCREEN_HEIGHT * 4.1 // 12), int(SCREEN_WIDTH * 0.75 // 3), int(85 / 1440 * SCREEN_HEIGHT)))
+
+        text_surf, text_rectangle = text_objects(str(rounds_display), LABEL_TEXT, WHITE)
+        text_rectangle.center = (int(SCREEN_WIDTH // 2), int(SCREEN_HEIGHT // 2.67))
+        SCREEN.blit(text_surf, text_rectangle)
+
+    def changes_done(numrounds):
+        pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
+        
+        text_surf, text_rectangle = text_objects('Succesfully changed number of rounds to '+ str(numrounds), SMALL_TEXT, WHITE)
+        text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
+        SCREEN.blit(text_surf, text_rectangle)
+
+    num_rounds = 1
+    nroundsmenu = True
+    while nroundsmenu:
+        click = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+        
+        choose_rounds(num_rounds)
+        if button(' - ', *NUM_ROUNDS_BUTTONS_LAYOUT[0], click):
+            pygame.time.delay(100)
+            
+            if num_rounds <= 1:
+                pass
+
+            elif num_rounds > 1:
+                num_rounds -= 1
+
+            choose_rounds(num_rounds)
+
+        elif button(' + ', *NUM_ROUNDS_BUTTONS_LAYOUT[1], click):
+            pygame.time.delay(100)
+            num_rounds += 1
+
+            choose_rounds(num_rounds)
+
+        elif button('C O N F I R M ', *NUM_ROUNDS_BUTTONS_LAYOUT[2], click):
+            pygame.time.delay(100)
+            NROUNDS = int(num_rounds)
+
+            changes_done(NROUNDS)
+
+        elif button('R E T U R N', *NUM_ROUNDS_BUTTONS_LAYOUT[3], click):
+            pygame.time.delay(100)
+            settings_menu()
+
+        pygame.display.update(NUM_ROUNDS_BUTTONS_LAYOUT)
+
+    return NROUNDS
+
+#SETTINGS MENU
+def setup_settings_menu():
+    SCREEN.fill(GREY)
+
+    text_surf, text_rectangle = text_objects('SETTINGS', MENU_TEXT, WHITE)
+    text_rectangle.center = (int(SCREEN_WIDTH // 2), int(SCREEN_HEIGHT // 4))
+    SCREEN.blit(text_surf, text_rectangle)
+
+    pygame.display.update()
+
+def settings_menu():
+    setup_settings_menu()
+
+    settingsmenu = True
+    while settingsmenu:
+        click = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+        
+        if button('N U M B E R  O F  P L A Y E R S', *SETTINGS_BUTTONS_LAYOUT[0], click):
+            pygame.time.delay(100)
+            nplayers_menu()
+
+        elif button('N U M B E R  O F  R O U N D S', *SETTINGS_BUTTONS_LAYOUT[1], click):
+            pygame.time.delay(100)
+            nrounds_menu()
+
+        elif button('R E T U R N', *SETTINGS_BUTTONS_LAYOUT[2], click):
+            pygame.time.delay(100)
+            main_menu()
+
+        pygame.display.update(SETTINGS_BUTTONS_LAYOUT)
+
 
 #MAIN MENU
 def setup_main_menu():
@@ -195,7 +316,6 @@ def main_menu():
     setup_main_menu()
     start_game = False
 
-    #Create main menu game loop
     mainmenu = True
     while mainmenu:
         click = False
