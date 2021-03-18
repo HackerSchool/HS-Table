@@ -3,11 +3,17 @@ import pygame
 from math import *
 pygame.init()
 
-NPLAYERS = 9             # definir o nº de jogadores
-BOARDSIZE = 9          # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
+NPLAYERS = 2             # definir o nº de jogadores
+BOARDSIZE = 3            # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
 
-WHITE = (255,255,255)
-BLACK = (0,0,0)
+BLACK = (0, 0, 0)
+LIGHT_BLACK = (20, 20, 20)
+GREY = (28, 27, 27)
+WHITE = (207, 207, 207)
+LIGHT_GREEN = (109, 215, 143)
+DARK_GREEN = (79, 161, 106)
+
+
 LARGURA = 700
 ALTURA = 500
 
@@ -30,11 +36,11 @@ def makescreen():
     
     screen = pygame.display.set_mode((LARGURA,ALTURA))
     pygame.display.set_caption ("Jogo do Galo")
-    screen.fill(WHITE)
+    screen.fill(LIGHT_BLACK)
     
     for i in range (BOARDSIZE-1):
-            pygame.draw.line (screen, BLACK, ((xo + (dist*i)), 50) ,((xo + (dist*i)),(ALTURA-50)),10) # linhas horizontais 
-            pygame.draw.line (screen, BLACK, ((xo - dist), (yo + (dist*i))), ((xo + (BOARDSIZE-1)*dist),(yo + (dist*i))), 10) #linhas verticais
+            pygame.draw.line (screen, LIGHT_GREEN, ((xo + (dist*i)), 50) ,((xo + (dist*i)),(ALTURA-50)),10) # linhas horizontais 
+            pygame.draw.line (screen, LIGHT_GREEN, ((xo - dist), (yo + (dist*i))), ((xo + (BOARDSIZE-1)*dist),(yo + (dist*i))), 10) #linhas verticais
     
     return screen
 
@@ -63,15 +69,15 @@ def shapes(screen,player,c,l):
     
     # player 0: desenhar a cruz
     if player == 0:
-        pygame.draw.line(screen, BLACK,(int(xc-(dist/2)+15),int(yc-(dist/2)+15)),
+        pygame.draw.line(screen,WHITE,(int(xc-(dist/2)+15),int(yc-(dist/2)+15)),
                                        (int(xc+(dist/2)-15),int(yc+(dist/2)-15)),5)
-        pygame.draw.line(screen, BLACK,(int(xc-(dist/2)+15),int(yc+(dist/2)-15)),
+        pygame.draw.line(screen, WHITE,(int(xc-(dist/2)+15),int(yc+(dist/2)-15)),
                                        (int(xc+(dist/2)-15),int(yc-(dist/2)+15)),5)
    
     # player 1: desenhar a bola
     elif player == 1:
-        pygame.draw.circle(screen, BLACK, (xc,yc), int((dist/2)-15))
-        pygame.draw.circle(screen,WHITE,(xc,yc),int((dist/2)-19))
+        pygame.draw.circle(screen, WHITE, (xc,yc), int((dist/2)-15))
+        pygame.draw.circle(screen,LIGHT_BLACK,(xc,yc),int((dist/2)-19))
         
     else:
     # player n: desenhar poligno com n+1 lados (ex.: player 2 -> triângulo)   
@@ -83,7 +89,7 @@ def shapes(screen,player,c,l):
             y = int(yc - (raio * sin(a+(pi/2)+a*i)))
             x = int(xc + (raio * cos(a+(pi/2)+a*i)))
             points.append((x,y))
-        pygame.draw.polygon(screen,BLACK,points,5)
+        pygame.draw.polygon(screen,WHITE,points,5)
         
     
 def Play(w,player, c,l):
@@ -121,8 +127,7 @@ def main():
                     player += 1
         
                     if player >= NPLAYERS:
-                        player = 0
-                        
+                        player = 0              
                 
 
 if __name__ == "__main__":
