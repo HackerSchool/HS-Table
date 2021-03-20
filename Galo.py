@@ -102,7 +102,8 @@ def Play(w,player, c,l):
         # adicionar codigo para desenhar cruz/bola 
         shapes(w, player,c,l)
         return True
-       
+
+
 def Wins(screen):
     """Verifica se alguém ganhou"""
     
@@ -185,17 +186,82 @@ def Wins(screen):
     return r
 
 
-def randomBot(w, player): 
-    while True:
-        random1 = random.random() * BOARDSIZE
-        c = int (random1 // 1)
+def freePosFunc():
+    freePos = []
+    for i in range(BOARDSIZE):
+        for j in range(BOARDSIZE):
+            if Board[i][j] == -1:
+                freePos.append([i,j])
+    return freePos
 
-        random2 = random.random() * BOARDSIZE
-        l = int (random2 // 1) 
-        
-        if Play(w,player, c,l):
+
+def randomBot(w, player, freePos): 
+    aux = random.random()
+    rand = int ((aux * len(freePos)) // 1)
+    Play(w, player, freePos[rand][0], freePos[rand][1])
+    return
+
+
+def auxWin(c,l):
+    flag = True
+    for i in range(BOARDSIZE):
+        if (Board[c][i] != Board[c][l]) or (Board[c][i] == -1):
+            flag = False
+            break
+    if flag:
+        Board[c][l] = -1
+        return True
+    flag = True
+
+    for i in range(BOARDSIZE):
+        if (Board[i][l] != Board[c][l]) or (Board[i][l] == -1):
+            flag = False
+            break
+    if flag:
+        Board[c][l] = -1
+        return True
+    flag = True
+
+    if c == l:
+        for i in range(BOARDSIZE):
+            if (Board[i][i] != Board[c][l]) or (Board[i][i] == -1):
+                flag = False
+                break
+        if flag:
+            Board[c][l] = -1
+            return True
+        flag = True
+
+    if l == BOARDSIZE - 1 - c:
+        for i in range(BOARDSIZE):
+            if (Board[i][BOARDSIZE - 1 - i] != Board[c][l]) or (Board[i][BOARDSIZE - 1 - i] == -1):
+                flag = False
+                break
+        if flag:
+            Board[c][l] = -1
+            return True
+
+            
+    Board[c][l] = -1
+    return False
+
+
+def minimax(w,player, count):
+    freePos = freePosFunc()
+    
+    if len(freePos) == BOARDSIZE ** 2:
+        Play(w,player,0,0)
+        return
+    for i in range(len(freePos)):
+        Board[freePos[i][0]][freePos[i][1]] = player
+        if auxWin(freePos[i][0],freePos[i][1]):
+            Play(w,player,freePos[i][0],freePos[i][1])
             return
-     
+        Board[freePos[i][0]][freePos[i][1]] = -1
+    randomBot(w,player, freePos)
+
+    return
+
 
 def GodBot(w, player):
 
@@ -218,7 +284,7 @@ def galo():
                 pygame.quit() """
             if bot:
                 if player < NPLAYERS - 1:
-                    randomBot(w, player)
+                    minimax(w, player, 0)
                     win = Wins(w)
                     if win == "w":
                         sair = True
@@ -230,6 +296,12 @@ def galo():
                     
                     elif win == "e": 
                         print ("jogo empatado")
+                        sair = True
+                        print ("player",player + 1, "wins!")
+                        pygame.display.update()
+                        pygame.time.delay(100)
+                        w.fill(LIGHT_BLACK)
+
                     player += 1
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -255,6 +327,11 @@ def galo():
                         
                         elif win == "e": 
                             print ("jogo empatado")
+                            sair = True
+                            print ("player",player + 1, "wins!")
+                            pygame.display.update()
+                            pygame.time.delay(100)
+                            w.fill(LIGHT_BLACK)
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
@@ -278,6 +355,11 @@ def galo():
                         
                     elif win == "e": 
                         print ("jogo empatado")
+                        sair = True
+                        print ("player",player + 1, "wins!")
+                        pygame.display.update()
+                        pygame.time.delay(100)
+                        w.fill(LIGHT_BLACK)
                     
         
             if event.type == pygame.QUIT:
