@@ -195,14 +195,14 @@ def freePosFunc():
     return freePos
 
 
-def randomBot(w, player, freePos): 
+def randomBot(w, player, freePos): #choses a random move from the free spaces
     aux = random.random()
     rand = int ((aux * len(freePos)) // 1)
     Play(w, player, freePos[rand][0], freePos[rand][1])
     return
 
 
-def auxWin(c,l):
+def auxWin(c,l):#helps the maxmini function knowing id a given move wins on the spot
     flag = True
     for i in range(BOARDSIZE):
         if (Board[c][i] != Board[c][l]) or (Board[c][i] == -1):
@@ -246,7 +246,7 @@ def auxWin(c,l):
     return False
 
 
-def minimax(w,player, count):
+def minimax(w,player, count):#still in developmen here is where the bot will be programed to be better and better
     freePos = freePosFunc()
     
     if len(freePos) == BOARDSIZE ** 2:
@@ -263,9 +263,6 @@ def minimax(w,player, count):
     return
 
 
-def GodBot(w, player):
-
-    return
                     
     
 def galo():
