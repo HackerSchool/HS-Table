@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pygame
+import random
 from math import *
 pygame.init()
 
@@ -105,72 +106,104 @@ def Play(w,player, c,l):
 def Wins(screen):
     """Verifica se alguém ganhou"""
     
-    win = False
+    check_e = True
     for l in range (BOARDSIZE):
         check_h = True # True quando todos os elementos de uma linha são iguais (e não vazios)
         for c in range (BOARDSIZE):
             if (Board[c][l] != Board[0][l]) or (Board[c][l] == -1):
+                if Board[c][l] == -1: 
+                    check_e = False
                 check_h = False
                 break
         if check_h == True: 
-            win = True
             pygame.draw.line(screen,WHITE,(xo-dist,int(yo-(dist/2)+dist*l)), (xo+(dist*(BOARDSIZE-1)),int((yo-dist/2)+dist*l)),10)
+            check_e = False
+            r = "w"
+            return r
 
         
     for c in range (BOARDSIZE):
         check_v = True # True quando todos os elementos de uma coluna são iguais (e não vazios)
         for l in range (BOARDSIZE):
             if (Board[c][l] != Board[c][0]) or (Board[c][l] == -1):
+                if Board[c][l] == -1: 
+                    check_e = False
                 check_v = False
                 break
         if check_v == True: 
-            win = True
-            pygame.draw.line(screen,WHITE,(int(xo-(dist/2)+dist*c), yo-dist),(int(xo-(dist/2)+dist*c),yo+(dist*(BOARDSIZE-1))),10)            
+            pygame.draw.line(screen,WHITE,(int(xo-(dist/2)+dist*c), yo-dist),(int(xo-(dist/2)+dist*c),yo+(dist*(BOARDSIZE-1))),10) 
+            check_e = False  
+            r = "w"
+            return r         
     
     
     
     check_d1 = True 
     for c in range(BOARDSIZE):
         if ((Board[c][c] != Board[0][0]) or (Board[c][c] == -1)):
+            if Board[c][c] == -1: 
+                check_e = False
             check_d1 = False
             break
-    if check_d1 == True: 
-        win = True
+    if check_d1 == True:
         pygame.draw.line(screen,WHITE,(xo-dist,yo-dist), (xo+(dist*(BOARDSIZE-1)),yo+(dist*(BOARDSIZE-1))),10)
+        check_e = False
+        r = "w"
+        return r
     
     
     
     check_d2 = True 
     for c in range(BOARDSIZE):
         if (Board[BOARDSIZE-1-c][c] != Board[BOARDSIZE-1][0]) or (Board[BOARDSIZE-1-c][c] == -1):
+            if Board[BOARDSIZE-1-c][c] == -1: 
+                check_e = False
             check_d2 = False
             break
-    if check_d2 == True: 
-        win = True
+    if check_d2 == True:
         pygame.draw.line(screen,WHITE,(xo+(dist*(BOARDSIZE-1)),yo-dist), (xo-dist,yo+(dist*(BOARDSIZE-1))),10)
+        check_e = False
+        r = "w"
+        return r
             
         
         
-    if win == False:
+    """ if win == False:
         check_e = True
         for c in range (BOARDSIZE):
             for l in range (BOARDSIZE):
                 if Board[l][c] == -1:
                     check_e = False
-                    break
+                    break """ #como ja vamos percorrer por todos os pontos fui verificando la no meio se havia empate ou nao ent ja n e preciso este ciclo
             
-    if win == True: 
-        r = "w"
         
-    elif check_e == True: 
-        r= "e"
+    if check_e == True: 
+        r = "e"
     
     else: r = 0
     
     return r
+
+
+def randomBot(w, player): 
+    while True:
+        random1 = random.random() * BOARDSIZE
+        c = int (random1 // 1)
+
+        random2 = random.random() * BOARDSIZE
+        l = int (random2 // 1) 
+        
+        if Play(w,player, c,l):
+            return
+     
+
+def GodBot(w, player):
+
+    return
                     
     
 def galo():
+    bot = True
     player = 0
     w = makescreen() #cria a janela de jogo
 
@@ -180,28 +213,71 @@ def galo():
         pygame.display.update()
         
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                c,l = convert(pos)
-                
-                if Play(w,player, c,l):
-                    # if played on valid spot increment player
+            """ if event.type == pygame.QUIT:
+                sair = False
+                pygame.quit() """
+            if bot:
+                if player < NPLAYERS - 1:
+                    randomBot(w, player)
+                    win = Wins(w)
+                    if win == "w":
+                        sair = True
+                        print ("player",player + 1, "wins!")
+                        pygame.display.update()
+                        pygame.time.delay(100)
+                        w.fill(LIGHT_BLACK)
+                    
+                    
+                    elif win == "e": 
+                        print ("jogo empatado")
                     player += 1
-        
-                    if player >= NPLAYERS:
-                        player = 0       
-               
-                win = Wins(w)
-                if win == "w":
-                    sair = True
-                    print ("player",player, "wins!")
-                    pygame.display.update()
-                    pygame.time.delay(100)
-                    w.fill(LIGHT_BLACK)
+                else:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        pos = pygame.mouse.get_pos()
+                        c,l = convert(pos)
+                        
+                        if Play(w,player, c,l):
+                            # if played on valid spot increment player
+                            player += 1
+                
+                            if player >= NPLAYERS:
+                                player = 0       
                     
+                        win = Wins(w)
+                        if win == "w":
+                            player += 1
+                            sair = True
+                            print ("player",player + 1, "wins!")
+                            pygame.display.update()
+                            pygame.time.delay(100)
+                            w.fill(LIGHT_BLACK)
+                        
+                        
+                        elif win == "e": 
+                            print ("jogo empatado")
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    c,l = convert(pos)
                     
-                elif win == "e": 
-                    print ("jogo empatado")
+                    if Play(w,player, c,l):
+                        # if played on valid spot increment player
+                        player += 1
+            
+                        if player >= NPLAYERS:
+                            player = 0       
+                
+                    win = Wins(w)
+                    if win == "w":
+                        sair = True
+                        print ("player",player + 1, "wins!")
+                        pygame.display.update()
+                        pygame.time.delay(100)
+                        w.fill(LIGHT_BLACK)
+                        
+                        
+                    elif win == "e": 
+                        print ("jogo empatado")
                     
         
             if event.type == pygame.QUIT:
@@ -216,4 +292,5 @@ def galo():
                 sair = False
                 pygame.quit()
             
-galo()
+if __name__ == "__main__": #safety reasons (so entra se for chamado aqui)
+    galo()
