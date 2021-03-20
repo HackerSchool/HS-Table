@@ -4,15 +4,11 @@ from math import *
 pygame.init()
 
 NPLAYERS = 2             # definir o nº de jogadores
-BOARDSIZE = 3            # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
+BOARDSIZE = 3           # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
 
-BLACK = (0, 0, 0)
 LIGHT_BLACK = (20, 20, 20)
-GREY = (28, 27, 27)
 WHITE = (207, 207, 207)
 LIGHT_GREEN = (109, 215, 143)
-DARK_GREEN = (79, 161, 106)
-
 
 LARGURA = 700
 ALTURA = 500
@@ -45,6 +41,7 @@ def makescreen():
     return screen
 
 def convert(pos):
+    """Converte as coordenadas do "rato" para uma posição (coluna,linha) no jogo"""
     x = xo
     y = yo
                  
@@ -62,6 +59,7 @@ def convert(pos):
     return c,l
 
 def shapes(screen,player,c,l):
+    """Desenha o poligono do jogador na sua jogada"""
     
     # coordenadas do centro do quadrado
     xc = int(xo + (c*dist) - (dist/2)) 
@@ -89,8 +87,7 @@ def shapes(screen,player,c,l):
             y = int(yc - (raio * sin(a+(pi/2)+a*i)))
             x = int(xc + (raio * cos(a+(pi/2)+a*i)))
             points.append((x,y))
-        pygame.draw.polygon(screen,WHITE,points,5)
-        
+        pygame.draw.polygon(screen,WHITE,points,5)   
     
 def Play(w,player, c,l):
     """ Handles a player play """
@@ -104,8 +101,76 @@ def Play(w,player, c,l):
         # adicionar codigo para desenhar cruz/bola 
         shapes(w, player,c,l)
         return True
+       
+def Wins(screen):
+    """Verifica se alguém ganhou"""
+    
+    win = False
+    for l in range (BOARDSIZE):
+        check_h = True # True quando todos os elementos de uma linha são iguais (e não vazios)
+        for c in range (BOARDSIZE):
+            if (Board[c][l] != Board[0][l]) or (Board[c][l] == -1):
+                check_h = False
+                break
+        if check_h == True: 
+            win = True
+            pygame.draw.line(screen,WHITE,(xo-dist,int(yo-(dist/2)+dist*l)), (xo+(dist*(BOARDSIZE-1)),int((yo-dist/2)+dist*l)),10)
 
-def main():
+        
+    for c in range (BOARDSIZE):
+        check_v = True # True quando todos os elementos de uma coluna são iguais (e não vazios)
+        for l in range (BOARDSIZE):
+            if (Board[c][l] != Board[c][0]) or (Board[c][l] == -1):
+                check_v = False
+                break
+        if check_v == True: 
+            win = True
+            pygame.draw.line(screen,WHITE,(int(xo-(dist/2)+dist*c), yo-dist),(int(xo-(dist/2)+dist*c),yo+(dist*(BOARDSIZE-1))),10)            
+    
+    
+    
+    check_d1 = True 
+    for c in range(BOARDSIZE):
+        if ((Board[c][c] != Board[0][0]) or (Board[c][c] == -1)):
+            check_d1 = False
+            break
+    if check_d1 == True: 
+        win = True
+        pygame.draw.line(screen,WHITE,(xo-dist,yo-dist), (xo+(dist*(BOARDSIZE-1)),yo+(dist*(BOARDSIZE-1))),10)
+    
+    
+    
+    check_d2 = True 
+    for c in range(BOARDSIZE):
+        if (Board[BOARDSIZE-1-c][c] != Board[BOARDSIZE-1][0]) or (Board[BOARDSIZE-1-c][c] == -1):
+            check_d2 = False
+            break
+    if check_d2 == True: 
+        win = True
+        pygame.draw.line(screen,WHITE,(xo+(dist*(BOARDSIZE-1)),yo-dist), (xo-dist,yo+(dist*(BOARDSIZE-1))),10)
+            
+        
+        
+    if win == False:
+        check_e = True
+        for c in range (BOARDSIZE):
+            for l in range (BOARDSIZE):
+                if Board[l][c] == -1:
+                    check_e = False
+                    break
+            
+    if win == True: 
+        r = "w"
+        
+    elif check_e == True: 
+        r= "e"
+    
+    else: r = 0
+    
+    return r
+                    
+    
+def galo():
     player = 0
     w = makescreen() #cria a janela de jogo
 
@@ -115,9 +180,6 @@ def main():
         pygame.display.update()
         
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sair = True
-                pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 c,l = convert(pos)
@@ -127,8 +189,31 @@ def main():
                     player += 1
         
                     if player >= NPLAYERS:
-                        player = 0              
-                
-
-if __name__ == "__main__":
-    main()
+                        player = 0       
+               
+                win = Wins(w)
+                if win == "w":
+                    sair = True
+                    print ("player",player, "wins!")
+                    pygame.display.update()
+                    pygame.time.delay(100)
+                    w.fill(LIGHT_BLACK)
+                    
+                    
+                elif win == "e": 
+                    print ("jogo empatado")
+                    
+        
+            if event.type == pygame.QUIT:
+                sair = True
+                pygame.quit()
+    
+    while sair:
+        pygame.display.update()
+            
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sair = False
+                pygame.quit()
+            
+galo()
