@@ -1,15 +1,16 @@
 import os
 import pygame
+from Color import *
 
 FPS = 60 #Sets a limit of FPS to be able to run better
 
 #Colours
-BLACK = (0, 0, 0)
-LIGHT_BLACK = (20, 20, 20)
-GREY = (28, 27, 27)
-WHITE = (207, 207, 207)
-LIGHT_GREEN = (109, 215, 143)
-DARK_GREEN = (79, 161, 106)
+# BLACK = (255, 255, 255)
+# LIGHT_BLACK = (20, 20, 20)
+# GREY = (28, 27, 27)
+# WHITE = (207, 207, 207)
+# LIGHT_GREEN = (109, 215, 143)
+# DARK_GREEN = (79, 161, 106)
 
 #Get fonts
 FONT_ORIGAMI = 'fonts/Origami.ttf'
@@ -25,7 +26,7 @@ os.environ['SDL_VIDEO_CENTERED'] = '1' #Centers the window screen
 
 SCREEN_WIDTH = int(pygame.display.Info().current_w)
 SCREEN_HEIGHT = int(pygame.display.Info().current_h)
-FULLSCREEN = True
+FULLSCREEN = False
 if FULLSCREEN == True:
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 else:
@@ -168,6 +169,8 @@ def nplayers_menu():
 
             changes_done(NPLAYERS)
 
+            settings_menu()
+
         elif button('R E T U R N', *NUM_PLAYERS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
             settings_menu()
@@ -238,6 +241,8 @@ def nrounds_menu():
             NROUNDS = int(num_rounds)
 
             changes_done(NROUNDS)
+
+            settings_menu()
 
         elif button('R E T U R N', *NUM_ROUNDS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
