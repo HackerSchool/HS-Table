@@ -5,7 +5,7 @@ from math import *
 pygame.init()
 
 NPLAYERS = 2             # definir o nº de jogadores
-BOARDSIZE = 3           # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
+BOARDSIZE = 3         # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
 
 LIGHT_BLACK = (20, 20, 20)
 WHITE = (207, 207, 207)
@@ -186,7 +186,7 @@ def Wins(screen):
     return r
 
 
-def freePosFunc():
+def freePosFunc(): #creates a list of possible valid plays
     freePos = []
     for i in range(BOARDSIZE):
         for j in range(BOARDSIZE):
@@ -202,14 +202,14 @@ def randomBot(w, player, freePos): #choses a random move from the free spaces
     return
 
 
-def auxWin(c,l):#helps the maxmini function knowing id a given move wins on the spot
+def auxWin(c, l): #helps the minimax function knowing if a given move wins on the spot
     flag = True
     for i in range(BOARDSIZE):
         if (Board[c][i] != Board[c][l]) or (Board[c][i] == -1):
             flag = False
             break
     if flag:
-        Board[c][l] = -1
+        
         return True
     flag = True
 
@@ -218,7 +218,7 @@ def auxWin(c,l):#helps the maxmini function knowing id a given move wins on the 
             flag = False
             break
     if flag:
-        Board[c][l] = -1
+        
         return True
     flag = True
 
@@ -228,7 +228,7 @@ def auxWin(c,l):#helps the maxmini function knowing id a given move wins on the 
                 flag = False
                 break
         if flag:
-            Board[c][l] = -1
+            
             return True
         flag = True
 
@@ -238,15 +238,15 @@ def auxWin(c,l):#helps the maxmini function knowing id a given move wins on the 
                 flag = False
                 break
         if flag:
-            Board[c][l] = -1
+            
             return True
 
             
-    Board[c][l] = -1
+    
     return False
 
 
-def minimax(w,player, count):#still in developmen here is where the bot will be programed to be better and better
+""" def medium(w,player):#still in development here is where the bot will be programed to be better and better
     freePos = freePosFunc()
     
     if len(freePos) == BOARDSIZE ** 2:
@@ -254,19 +254,69 @@ def minimax(w,player, count):#still in developmen here is where the bot will be 
         return
     for i in range(len(freePos)):
         Board[freePos[i][0]][freePos[i][1]] = player
-        if auxWin(freePos[i][0],freePos[i][1]):
+        if auxWin(freePos[i][0],freePos[i][1]): #jogada vencedora
+            Board[freePos[i][0]][freePos[i][1]] = -1
             Play(w,player,freePos[i][0],freePos[i][1])
             return
         Board[freePos[i][0]][freePos[i][1]] = -1
+    
+    for i in range(len(freePos)):
+        for j in range(NPLAYERS):
+            if (player == j): #simular a jogada do outro jogador
+                continue
+            else:
+                Board[freePos[i][0]][freePos[i][1]] = j
+            if auxWin(freePos[i][0],freePos[i][1]): #jogada vencedora
+                Board[freePos[i][0]][freePos[i][1]] = -1
+                Play(w,player,freePos[i][0],freePos[i][1])
+                return
+            Board[freePos[i][0]][freePos[i][1]] = -1
+
     randomBot(w,player, freePos)
 
-    return
+    return """
+
+def GodBot(player, freePos, freePosNum, depth=1, flag=1): #minimax algorithm kinda
+    if flag == 0 and depth == NPLAYERS + 1:
+        return [None, 0]
+    if depth > 50/(BOARDSIZE * log2(BOARDSIZE)) and depth > 3: #max depth para impedir que fique 1000 anos a calcular a segunda jogada com tabuleiros grandes
+        return [None, 0]
+
+    if freePosNum == BOARDSIZE ** 2 and flag: #it takes a lot of time for the first move..
+        return [[0,0],0]
 
 
+    best = [None, 0]
+    for i in range(freePosNum):
+        aux = False
+        Board[freePos[i][0]][freePos[i][1]] = (player + depth - 1) % NPLAYERS
+        w = auxWin(freePos[i][0],freePos[i][1])
+        p = player == (depth - 1 + player) % NPLAYERS
+        if w:
+            score = 100*(1+freePosNum) if p else -100*(1+freePosNum)
+            best = [freePos[i], score]
+            Board[freePos[i][0]][freePos[i][1]] = -1
+            return best #não vale a pena continuar ou avançar no depth
+        else:
+            temp = freePos[i]
+            del freePos[i]
+            pos, score = GodBot(player, freePos, freePosNum - 1, depth + 1, flag)
+            freePos.insert(i, temp)
+            if score == best[1]: #just to add some randomness or else it gets pretty repetitive
+                c = random.random()
+                if c < 0.5:
+                    aux = True
+            if (score > best[1] and p) or (score < best[1] and not p) or aux or best[0] is None:
+                best = [freePos[i], score]
+        Board[freePos[i][0]][freePos[i][1]] = -1
+    return best
+        
                     
     
 def galo():
-    bot = True
+    bot = [False, False, True] #chose the difficulty
+    first = True #if true human starts
+    aux = 0
     player = 0
     w = makescreen() #cria a janela de jogo
 
@@ -279,9 +329,21 @@ def galo():
             """ if event.type == pygame.QUIT:
                 sair = False
                 pygame.quit() """
-            if bot:
-                if player < NPLAYERS - 1:
-                    minimax(w, player, 0)
+            if bot[0] or bot[1] or bot[2]:
+                if (player > 0 and first) or (player < NPLAYERS - 1 and not first):
+                    if bot[0]: #easy just random
+                        freePos = freePosFunc()
+                        randomBot(w, player, freePos)
+                    elif bot[1]: # only knows if he can win on the spot or if someone else can in their next move (and stops them)
+                        freePos = freePosFunc()
+                        temp = len(freePos)
+                        best = GodBot(player, freePos, temp, 1, 0)
+                        Play(w,player,best[0][0],best[0][1])
+                    else: #hard
+                        freePos = freePosFunc()
+                        temp = len(freePos)
+                        best = GodBot(player, freePos, temp)
+                        Play(w,player,best[0][0],best[0][1])
                     win = Wins(w)
                     if win == "w":
                         sair = True
@@ -294,12 +356,13 @@ def galo():
                     elif win == "e": 
                         print ("jogo empatado")
                         sair = True
-                        print ("player",player + 1, "wins!")
                         pygame.display.update()
                         pygame.time.delay(100)
                         w.fill(LIGHT_BLACK)
 
                     player += 1
+                    if player == NPLAYERS:
+                        player = 0
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pos = pygame.mouse.get_pos()
@@ -313,8 +376,11 @@ def galo():
                                 player = 0       
                     
                         win = Wins(w)
-                        if win == "w":
-                            player += 1
+                        if win == "w":#ajust for the play before
+                            if player == 0:
+                                player = NPLAYERS - 1
+                            else:
+                                player -= 1
                             sair = True
                             print ("player",player + 1, "wins!")
                             pygame.display.update()
@@ -325,7 +391,6 @@ def galo():
                         elif win == "e": 
                             print ("jogo empatado")
                             sair = True
-                            print ("player",player + 1, "wins!")
                             pygame.display.update()
                             pygame.time.delay(100)
                             w.fill(LIGHT_BLACK)
@@ -343,6 +408,10 @@ def galo():
                 
                     win = Wins(w)
                     if win == "w":
+                        if player == 0:#ajust for the play before
+                            player = NPLAYERS - 1
+                        else:
+                            player -= 1
                         sair = True
                         print ("player",player + 1, "wins!")
                         pygame.display.update()
@@ -353,7 +422,6 @@ def galo():
                     elif win == "e": 
                         print ("jogo empatado")
                         sair = True
-                        print ("player",player + 1, "wins!")
                         pygame.display.update()
                         pygame.time.delay(100)
                         w.fill(LIGHT_BLACK)
