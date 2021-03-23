@@ -4,8 +4,8 @@ import random
 from math import *
 pygame.init()
 
-NPLAYERS = 2             # definir o nº de jogadores
-BOARDSIZE = 3         # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
+NPLAYERS = 3             # definir o nº de jogadores
+BOARDSIZE = 6         # definir o tamanho do board (BOARDSIZE*BOARDSIZE)
 
 LIGHT_BLACK = (20, 20, 20)
 WHITE = (207, 207, 207)
@@ -246,40 +246,11 @@ def auxWin(c, l): #helps the minimax function knowing if a given move wins on th
     return False
 
 
-""" def medium(w,player):#still in development here is where the bot will be programed to be better and better
-    freePos = freePosFunc()
-    
-    if len(freePos) == BOARDSIZE ** 2:
-        Play(w,player,0,0)
-        return
-    for i in range(len(freePos)):
-        Board[freePos[i][0]][freePos[i][1]] = player
-        if auxWin(freePos[i][0],freePos[i][1]): #jogada vencedora
-            Board[freePos[i][0]][freePos[i][1]] = -1
-            Play(w,player,freePos[i][0],freePos[i][1])
-            return
-        Board[freePos[i][0]][freePos[i][1]] = -1
-    
-    for i in range(len(freePos)):
-        for j in range(NPLAYERS):
-            if (player == j): #simular a jogada do outro jogador
-                continue
-            else:
-                Board[freePos[i][0]][freePos[i][1]] = j
-            if auxWin(freePos[i][0],freePos[i][1]): #jogada vencedora
-                Board[freePos[i][0]][freePos[i][1]] = -1
-                Play(w,player,freePos[i][0],freePos[i][1])
-                return
-            Board[freePos[i][0]][freePos[i][1]] = -1
-
-    randomBot(w,player, freePos)
-
-    return """
-
 def GodBot(player, freePos, freePosNum, depth=1, flag=1): #minimax algorithm kinda
     if flag == 0 and depth == NPLAYERS + 1:
         return [None, 0]
     if depth > 50/(BOARDSIZE * log2(BOARDSIZE)) and depth > 3: #max depth para impedir que fique 1000 anos a calcular a segunda jogada com tabuleiros grandes
+
         return [None, 0]
 
     if freePosNum == BOARDSIZE ** 2 and flag: #it takes a lot of time for the first move..
@@ -310,12 +281,50 @@ def GodBot(player, freePos, freePosNum, depth=1, flag=1): #minimax algorithm kin
                 best = [freePos[i], score]
         Board[freePos[i][0]][freePos[i][1]] = -1
     return best
+
         
-                    
+def winsAnalise(w, win, player): #just so we dont have to repeat code
+    sair = False
+    if win == "w":#ajust for the play before
+        if player == 0:
+            player = NPLAYERS - 1
+        else:
+            player -= 1
+        sair = True
+        print ("player",player + 1, "wins!")
+    elif win == "e": 
+        print ("jogo empatado")
+        sair = True
+    return sair
+
+
+
+def humanPlay(w, player): #just so we dont have to repeat code
+    while True:
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                c,l = convert(pos)
+                
+                if Play(w,player, c,l):
+                    # if played on valid spot increment player
+                    player += 1
+
+                    if player >= NPLAYERS:
+                        player = 0    
+                    return player  
+            if event.type == pygame.QUIT: #dá mensagens de erro se sairmos na nossa jogada :(
+                sair = True
+                pygame.quit()
+                
+    
+
     
 def galo():
     bot = [False, False, True] #chose the difficulty
-    first = True #if true human starts
+    first = False #if true human starts
     aux = 0
     player = 0
     w = makescreen() #cria a janela de jogo
@@ -326,10 +335,7 @@ def galo():
         pygame.display.update()
         
         for event in pygame.event.get():
-            """ if event.type == pygame.QUIT:
-                sair = False
-                pygame.quit() """
-            if bot[0] or bot[1] or bot[2]:
+            if (bot[0] or bot[1] or bot[2]) and not sair:
                 if (player > 0 and first) or (player < NPLAYERS - 1 and not first):
                     if bot[0]: #easy just random
                         freePos = freePosFunc()
@@ -345,17 +351,8 @@ def galo():
                         best = GodBot(player, freePos, temp)
                         Play(w,player,best[0][0],best[0][1])
                     win = Wins(w)
-                    if win == "w":
-                        sair = True
-                        print ("player",player + 1, "wins!")
-                        pygame.display.update()
-                        pygame.time.delay(100)
-                        w.fill(LIGHT_BLACK)
-                    
-                    
-                    elif win == "e": 
-                        print ("jogo empatado")
-                        sair = True
+                    sair = winsAnalise(w, win, player)
+                    if sair:
                         pygame.display.update()
                         pygame.time.delay(100)
                         w.fill(LIGHT_BLACK)
@@ -363,69 +360,24 @@ def galo():
                     player += 1
                     if player == NPLAYERS:
                         player = 0
-                else:
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        pos = pygame.mouse.get_pos()
-                        c,l = convert(pos)
-                        
-                        if Play(w,player, c,l):
-                            # if played on valid spot increment player
-                            player += 1
-                
-                            if player >= NPLAYERS:
-                                player = 0       
-                    
-                        win = Wins(w)
-                        if win == "w":#ajust for the play before
-                            if player == 0:
-                                player = NPLAYERS - 1
-                            else:
-                                player -= 1
-                            sair = True
-                            print ("player",player + 1, "wins!")
-                            pygame.display.update()
-                            pygame.time.delay(100)
-                            w.fill(LIGHT_BLACK)
-                        
-                        
-                        elif win == "e": 
-                            print ("jogo empatado")
-                            sair = True
-                            pygame.display.update()
-                            pygame.time.delay(100)
-                            w.fill(LIGHT_BLACK)
-            else:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    c,l = convert(pos)
-                    
-                    if Play(w,player, c,l):
-                        # if played on valid spot increment player
-                        player += 1
-            
-                        if player >= NPLAYERS:
-                            player = 0       
-                
+
+                elif not sair:
+                    player = humanPlay(w, player)
                     win = Wins(w)
-                    if win == "w":
-                        if player == 0:#ajust for the play before
-                            player = NPLAYERS - 1
-                        else:
-                            player -= 1
-                        sair = True
-                        print ("player",player + 1, "wins!")
+                    sair = winsAnalise(w, win, player)
+                    if sair:
                         pygame.display.update()
                         pygame.time.delay(100)
                         w.fill(LIGHT_BLACK)
-                        
-                        
-                    elif win == "e": 
-                        print ("jogo empatado")
-                        sair = True
-                        pygame.display.update()
-                        pygame.time.delay(100)
-                        w.fill(LIGHT_BLACK)
-                    
+
+            elif not sair:
+                player = humanPlay(w, player)
+                win = Wins(w)
+                sair = winsAnalise(w, win, player)
+                if sair:
+                    pygame.display.update()
+                    pygame.time.delay(100)
+                    w.fill(LIGHT_BLACK)                    
         
             if event.type == pygame.QUIT:
                 sair = True
