@@ -1,7 +1,25 @@
 import pygame
 from tic_tac_toe.Color import *
+from math import sqrt, sin, cos, pi, atan, acos
+from random import randint
 
 (width, height) = (1080, 720)
+
+def AngleVector(x, y):
+    """ Returns the angle of a vector with the x axis """
+
+    try:
+        angle = atan(y/x)
+    except ZeroDivisionError:
+        if y < 0:
+            return -pi/2
+        else:
+            return pi/2
+
+    if x < 0:
+        angle += pi
+
+    return angle 
 
 class Border():
     def __init__(self, x, y, w, h, color):
@@ -43,8 +61,8 @@ class Ball():
     def __init__(self, x, y, radius, color):
         self.x = x
         self.y = y
-        self.vel_x = 1
-        self.vel_y = -1.5
+        self.vel_x = 0
+        self.vel_y = 0
         self.radius = radius
         self.color = color
     
@@ -59,12 +77,55 @@ class Ball():
         self.x += self.vel_x
         self.y += self.vel_y
 
+    def CheckCollision(self, ball):
+        """ Checks if a ball has collided with self """
+
+        # vector that links the balls
+        dist_x = ball.x - self.x
+        dist_y = ball.y - self.y
+
+        # see if collided
+        dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+        if dist <= self.radius + ball.radius:
+
+            # calculate modulus of velocitys
+            vel_self = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
+            vel_ball = sqrt(ball.vel_x ** 2 + ball.vel_y ** 2)
+
+            # calculate incidence angles of balls
+            angle_self = AngleVector(self.vel_x, self.vel_y)
+
+            angle_ball = AngleVector(ball.vel_x, ball.vel_y)
+
+            # calculate the angle of collision
+            angle_ab = AngleVector(dist_x, dist_y)
+
+            # calculate velocities, using this equations: https://williamecraver.wixsite.com/elastic-equations
+            self.vel_x = vel_ball * cos(angle_ball - angle_ab) * cos(angle_ab) + vel_self * sin(angle_self - angle_ab) * cos(angle_ab + pi / 2)
+            self.vel_y = vel_ball * cos(angle_ball - angle_ab) * sin(angle_ab) + vel_self * sin(angle_self - angle_ab) * sin(angle_ab + pi / 2)
+
+            ball.vel_x = vel_self * cos(angle_self - angle_ab) * cos(angle_ab) + vel_ball * sin(angle_ball - angle_ab) * cos(angle_ab + pi / 2)
+            ball.vel_y = vel_self * cos(angle_self - angle_ab) * sin(angle_ab) + vel_ball * sin(angle_ball - angle_ab) * sin(angle_ab + pi / 2)
+
+            # makes balls (and all my problems) go away
+            while sqrt((self.x - ball.x) ** 2 + (self.y - ball.y) ** 2) <= self.radius + ball.radius:
+                self.Move()
+                ball.Move()
+
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Project Kobe')
 
 walls = [Border(0, 0, width, 10, BLACK), Border(0, 0, 10, height, BLACK), Border(width - 10, 0, 10, height, BLACK), Border(0, height -10, width, 10, BLACK)]
-b = Ball(500, 500, 100, WHITE)
+
+balls = []
+
+for i in range(0, int(input("Numero de bolas: "))):
+    balls.append(Ball(randint(50, width-50), randint(50, height-50), 50, (randint(0,255), randint(0,255), randint(0,255))))
+
+    balls[i].vel_x = randint(-10, 10)
+    balls[i].vel_y = randint(-10, 10)
 
 pygame.display.flip()
 
@@ -74,15 +135,21 @@ while running:
     pygame.time.delay(10)
     screen.fill(DARK_GREEN)
 
-    b.Move()
+    for b in balls:
+        b.Render()
+        b.Move()
 
     for wall in walls:
-        wall.CheckCollision(b)
         wall.Render()
 
-    b.Render()
-
     pygame.display.flip()
+
+    for i in range(0, len(balls)):
+        for j in range(i+1, len(balls)):
+            balls[i].CheckCollision(balls[j])
+
+        for wall in walls:
+            wall.CheckCollision(balls[i])
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
