@@ -1,6 +1,7 @@
 import os
 import pygame
 from Color import *
+from Galo import *
 
 FPS = 60 #Sets a limit of FPS to be able to run better
 
@@ -277,7 +278,7 @@ def settings_menu():
         
         if button('N U M B E R  O F  P L A Y E R S', *SETTINGS_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
-            nplayers_menu()
+            players, boardsize = nplayers_menu()
 
         elif button('N U M B E R  O F  R O U N D S', *SETTINGS_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
@@ -288,6 +289,8 @@ def settings_menu():
             main_menu()
 
         pygame.display.update(SETTINGS_BUTTONS_LAYOUT)
+        
+    return players, boardsize
 
 
 #MAIN MENU
@@ -304,6 +307,9 @@ def setup_main_menu():
     pygame.display.update()
 
 def main_menu():
+    players = 2       
+    boardsize = 3
+    
     setup_main_menu()
     start_game = False
 
@@ -314,7 +320,8 @@ def main_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                #exit() #o exit dá me erros
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
@@ -326,12 +333,16 @@ def main_menu():
             pygame.time.delay(100)
             settings_menu()
 
+
         elif button('Q U I T   G A M E', *MAIN_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
-            exit()
+            #exit() # O exit dá me erro
+            pygame.quit()
 
-        #if start_game:
-            #CODE THAT STARTS THE GAME
+        if start_game:
+            rondas = 3
+            galo_BOT(players,boardsize,rondas, 2)
+            main_menu()
 
         pygame.display.update(MAIN_BUTTONS_LAYOUT)
 
