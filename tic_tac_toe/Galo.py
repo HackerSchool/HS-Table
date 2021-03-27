@@ -337,7 +337,6 @@ def humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player): #just so we 
         
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("hello")
                 pos = pygame.mouse.get_pos()
                 c,l = convert(BOARDSIZE,dist,pos,xo,yo)
                 
@@ -348,9 +347,9 @@ def humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player): #just so we 
                     if player >= NPLAYERS:
                         player = 0    
                     return player  
-            if event.type == pygame.QUIT: #dá mensagens de erro se sairmos na nossa jogada :(
+            if event.type == pygame.QUIT: 
                 sair = True
-                pygame.quit()
+                return -1
 
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
@@ -383,8 +382,9 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             for event in pygame.event.get():
                 #if event.type == pygame.MOUSEBUTTONDOWN:
                 player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player)    
+                if player == -1:
+                    return
                 win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
-                print ("t",t)
                 
                 #if t == 0:
                 t = winsAnalise(LARGURA, ALTURA, w, win, player)
@@ -396,7 +396,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             #adicionei isto para se carregarem no 'x' a meio de um jogo
             if event.type == pygame.QUIT:
                 sair = True
-                pygame.quit()
+                return
 
             if t == 2:
                 break
@@ -419,7 +419,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sair = False
-                pygame.quit()
+                return
 
 
 def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
@@ -478,9 +478,10 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                         player = 0
 
                 elif t == 0:
-                    player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player)    
+                    player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
+                    if player == -1:
+                        return   
                     win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
-                    print ("t",t)
                     t = winsAnalise(LARGURA, ALTURA, w, win, player)                            
                     if t != 0:
                         t = 2
@@ -489,7 +490,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
             #adicionei isto para se carregarem no 'x' a meio de um jogo
             if event.type == pygame.QUIT:
                 sair = True
-                pygame.quit()
+                return
 
             if t == 2: 
                 break
@@ -512,6 +513,6 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sair = False
-                pygame.quit()
+                return
             
 #galo()

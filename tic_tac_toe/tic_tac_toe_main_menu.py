@@ -128,6 +128,8 @@ def nplayers_menu():
         text_surf, text_rectangle = text_objects('Succesfully changed number of players to '+ str(numplayers), SMALL_TEXT, WHITE)
         text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
         SCREEN.blit(text_surf, text_rectangle)
+        pygame.display.update()
+        pygame.time.delay(1000)
 
     num_players = 2
     nplayersmenu = True
@@ -166,15 +168,16 @@ def nplayers_menu():
         elif button('C O N F I R M ', *NUM_PLAYERS_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
             NPLAYERS = int(num_players)
-            BOARDSIZE = int(num_players)
+            BOARDSIZE = int(num_players) + 1 #devia-se adicionar uma opcaod e escolha mesmo para n depender do numero de jogadores
 
             changes_done(NPLAYERS)
 
-            settings_menu()
+            return NPLAYERS, BOARDSIZE
+
 
         elif button('R E T U R N', *NUM_PLAYERS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
-            settings_menu()
+            return -1, -1
 
         pygame.display.update(NUM_PLAYERS_BUTTONS_LAYOUT)
 
@@ -207,8 +210,10 @@ def nrounds_menu():
         text_surf, text_rectangle = text_objects('Succesfully changed number of rounds to '+ str(numrounds), SMALL_TEXT, WHITE)
         text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
         SCREEN.blit(text_surf, text_rectangle)
+        pygame.display.update()
+        pygame.time.delay(1000)
 
-    num_rounds = 1
+    num_rounds = 3
     nroundsmenu = True
     while nroundsmenu:
         click = False
@@ -243,11 +248,11 @@ def nrounds_menu():
 
             changes_done(NROUNDS)
 
-            settings_menu()
+            return NROUNDS
 
         elif button('R E T U R N', *NUM_ROUNDS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
-            settings_menu()
+            return -1
 
         pygame.display.update(NUM_ROUNDS_BUTTONS_LAYOUT)
 
@@ -263,8 +268,9 @@ def setup_settings_menu():
 
     pygame.display.update()
 
-def settings_menu():
+def settings_menu(players, boardsize, rondas):
     setup_settings_menu()
+    
 
     settingsmenu = True
     while settingsmenu:
@@ -279,18 +285,20 @@ def settings_menu():
         if button('N U M B E R  O F  P L A Y E R S', *SETTINGS_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             players, boardsize = nplayers_menu()
+            setup_settings_menu()
 
         elif button('N U M B E R  O F  R O U N D S', *SETTINGS_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            nrounds_menu()
+            rondas = nrounds_menu()
+            setup_settings_menu()
 
         elif button('R E T U R N', *SETTINGS_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
-            main_menu()
+            return players, boardsize, rondas
 
         pygame.display.update(SETTINGS_BUTTONS_LAYOUT)
         
-    return players, boardsize
+    return players, boardsize, rondas
 
 
 #MAIN MENU
@@ -309,6 +317,7 @@ def setup_main_menu():
 def main_menu():
     players = 2       
     boardsize = 3
+    rondas = 3
     
     setup_main_menu()
     start_game = False
@@ -331,7 +340,14 @@ def main_menu():
 
         elif button('S E T T I N G S', *MAIN_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            settings_menu()
+            playersTemp, boardsizeTemp, rondasTemp = settings_menu(players, boardsize, rondas)
+            if playersTemp != -1:
+                players = playersTemp
+            if boardsizeTemp != -1:
+                boardsize = boardsizeTemp
+            if rondasTemp != -1:
+                rondas = rondasTemp
+            setup_main_menu()
 
 
         elif button('Q U I T   G A M E', *MAIN_BUTTONS_LAYOUT[2], click):
@@ -340,7 +356,6 @@ def main_menu():
             pygame.quit()
 
         if start_game:
-            rondas = 3
             galo_BOT(players,boardsize,rondas, 2)
             main_menu()
 
