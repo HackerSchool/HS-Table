@@ -45,7 +45,7 @@ class Border():
                 dist = self.y - ball.y
 
             if dist < ball.radius:
-                ball.vel_y *= -1
+                ball.vel_y *= -0.95 #loss of energy
 
         # aligned horizontally
         if ball.y >= self.y and ball.y <= self.y + self.h:
@@ -55,7 +55,7 @@ class Border():
                 dist = self.x - ball.x
 
             if dist < ball.radius:
-                ball.vel_x *= -1
+                ball.vel_x *= -0.95 #loss of energy
         
 class Ball():
     def __init__(self, x, y, radius, color):
@@ -77,6 +77,9 @@ class Ball():
         self.x += self.vel_x
         self.y += self.vel_y
 
+        self.vel_x -= 0.001*self.vel_x #atrito
+        self.vel_y -= 0.001*self.vel_y #atrito
+
     def CheckCollision(self, ball):
         """ Checks if a ball has collided with self """
 
@@ -92,6 +95,9 @@ class Ball():
             # calculate modulus of velocitys
             vel_self = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
             vel_ball = sqrt(ball.vel_x ** 2 + ball.vel_y ** 2)
+
+            vel_self *= 0.95 #loss of energy
+            vel_ball *= 0.95
 
             # calculate incidence angles of balls
             angle_self = AngleVector(self.vel_x, self.vel_y)
