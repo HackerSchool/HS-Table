@@ -275,7 +275,7 @@ def winsAnalise(LARGURA, ALTURA, w, win, player): #just so we dont have to repea
         pygame.time.delay(300)
         w.blit(s, (0,0))
         
-        string = "player " + str(player) + " wins!"
+        string = "player " + str(player + 1) + " wins!"
         
         text_w = MAIN_FONT.render(str(string), True,LIGHT_GREEN)
         textwRect = text_w.get_rect()
@@ -341,18 +341,98 @@ def humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player): #just so we 
                 c,l = convert(BOARDSIZE,dist,pos,xo,yo)
                 
                 if Play(Board,dist,xo,yo,w,player, c,l):
-                    # if played on valid spot increment player
-                    player += 1
-
-                    if player >= NPLAYERS:
-                        player = 0    
+                    # if played on valid spot increment player  
                     return player  
             if event.type == pygame.QUIT: 
                 sair = True
                 return -1
 
+
+def getWinner(LARGURA, ALTURA, w, winner):
+    champs = []
+    aux = -1
+    for i in range(len(winner)):
+        if winner[i] > aux:
+            aux = winner[i]
+            champs = [] #dump the vector champs (there's a new champ in town)
+            champs.append(i)
+        elif winner[i] == aux:
+            champs.append(i)
+
+
+
+    s = pygame.Surface((LARGURA,ALTURA)) 
+    s.set_alpha(1000)              
+    s.fill((20,20,20))
+
+    pygame.display.update()
+    pygame.time.delay(300)
+    w.blit(s, (0,0))
+    
+    if (len(champs) == 1): #1 winner
+        string = "player " + str(champs[0] + 1) + " wins!"
+    else:
+        string = "players"
+        for i in range(len(champs)):
+            if i != 0:
+                string += ", " + str(champs[i] + 1)
+            else:
+               string += " " + str(champs[i] + 1) 
+        string += " win!"
+    
+    text_w = MAIN_FONT.render(str(string), True,LIGHT_GREEN)
+    textwRect = text_w.get_rect()
+    textwRect.center = (LARGURA // 2, ALTURA // 2)
+    
+    text_t = SMALL_FONT.render("TAP TO CONTINUE",True, WHITE)
+    texttRect = text_t.get_rect()
+    texttRect.center = (LARGURA//2,(ALTURA//2)+(ALTURA//7))
+    
+    w.blit(text_w,textwRect)
+    w.blit(text_t,texttRect)
+    
+    pygame.display.update()
+
+    while True:
+        pygame.display.update()            
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                return
+
+
+#Define rendered text of button (returns rendered text and it's image dimensions)
+def text_objects(text, font, colour):
+    text_surface = font.render(text, True, colour) #antialias = True
+    text_area = text_surface.get_rect()
+
+    return text_surface, text_area
+
+
+def thinking(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, player):
+    SMALL_TEXT = pygame.font.Font(FONT_RAJDHANI, int(50 / 1440 * SCREEN_HEIGHT))
+    pygame.draw.rect(SCREEN, (20, 20, 20), (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
+        
+    text_surf, text_rectangle = text_objects('Player ' + str(player + 1) + ' is thinking', SMALL_TEXT, (207, 207, 207))
+    text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
+    SCREEN.blit(text_surf, text_rectangle)
+    pygame.display.update()
+
+
+def notThinking(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT):
+    pygame.draw.rect(SCREEN, (20,20,20), (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
+        
+    """ text_surf, text_rectangle = text_objects('Succesfully changed number of players to '+ str(numplayers), SMALL_TEXT, WHITE)
+    text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
+    SCREEN.blit(text_surf, text_rectangle)
+    pygame.display.update()
+    pygame.time.delay(1000) """
+
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
+    winner = []
+    for i in range(NPLAYERS): #initialize vector with number of wins for each player
+        winner.append(0)
+
 
     dist = int ((ALTURA-100)/BOARDSIZE)          # distância entre duas linhas consecutivas (lado do quadrado)
     
@@ -380,18 +460,23 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
         while not sair:
             pygame.display.update()
             for event in pygame.event.get():
-                #if event.type == pygame.MOUSEBUTTONDOWN:
                 player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player)    
                 if player == -1:
                     return
                 win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
                 
-                #if t == 0:
+
                 t = winsAnalise(LARGURA, ALTURA, w, win, player)
+                 
                         
-                if t != 0: 
+                if t != 0: #draw or victory
+                    if win == 'w':
+                        winner[player] += 1
                     t = 2
                     break 
+                player += 1
+                if player >= NPLAYERS:
+                    player = 0 
             
             #adicionei isto para se carregarem no 'x' a meio de um jogo
             if event.type == pygame.QUIT:
@@ -401,17 +486,21 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             if t == 2:
                 break
 
+    getWinner(LARGURA, ALTURA, w, winner)
 
-        #acho q isto não é preciso mas i'm scared de apagar lol
-        """for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                sair = True
-                break
-            if event.type == pygame.QUIT:
-                sair = True
-                pygame.quit()"""
+    return
+
+
+    #acho q isto não é preciso mas i'm scared de apagar lol
+    """for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            sair = True
+            break
+        if event.type == pygame.QUIT:
+            sair = True
+            pygame.quit()"""
     
-    while sair:
+    """ while sair:
         pygame.display.update()
         if t != 0:
             break
@@ -419,10 +508,14 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sair = False
-                return
+                return """
 
 
 def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
+    winner = []
+    for i in range(NPLAYERS): #initialize vector with number of wins for each player
+        winner.append(0)
+
     bot = [False, False, False]
     bot[dificulty] = True
 
@@ -458,18 +551,24 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                         freePos = freePosFunc(Board, BOARDSIZE)
                         randomBot(Board, dist, xo, yo, w, player, freePos)
                     elif bot[1]: # only knows if he can win on the spot or if someone else can in their next move (and stops them)
+                        thinking(w, LARGURA, ALTURA, player)
                         freePos = freePosFunc(Board, BOARDSIZE)
                         temp = len(freePos)
-                        best = GodBot(Board, BOARDSIZE, player, freePos, temp, 1, 0)
+                        best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp, 1, 0)
+                        notThinking(w, LARGURA, ALTURA)
                         Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
                     else: #hard
+                        thinking(w, LARGURA, ALTURA, player)
                         freePos = freePosFunc(Board, BOARDSIZE)
                         temp = len(freePos)
                         best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp)
+                        notThinking(w, LARGURA, ALTURA)
                         Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
                     win = Wins(BOARDSIZE, w, Board, dist, xo, yo)
                     t = winsAnalise(LARGURA, ALTURA, w, win, player)
                     if t != 0:
+                        if win == 'w':
+                            winner[player] += 1
                         t = 2
                         break 
 
@@ -484,8 +583,13 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                     win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
                     t = winsAnalise(LARGURA, ALTURA, w, win, player)                            
                     if t != 0:
+                        if win == 'w':
+                            winner[player] += 1
                         t = 2
                         break 
+                    player += 1
+                    if player >= NPLAYERS:
+                        player = 0 
             
             #adicionei isto para se carregarem no 'x' a meio de um jogo
             if event.type == pygame.QUIT:
@@ -495,17 +599,20 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
             if t == 2: 
                 break
 
-
-        #acho q isto não é preciso mas i'm scared de apagar lol
-        """for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                sair = True
-                break
-            if event.type == pygame.QUIT:
-                sair = True
-                pygame.quit()"""
     
-    while sair:
+    getWinner(LARGURA, ALTURA, w, winner)
+    return
+
+    #acho q isto não é preciso mas i'm scared de apagar lol
+    """for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            sair = True
+            break
+        if event.type == pygame.QUIT:
+            sair = True
+            pygame.quit()"""
+    
+    """ while sair:
         pygame.display.update()
         if t != 0:
             break
@@ -513,6 +620,6 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sair = False
-                return
+                return """
             
 #galo()
