@@ -348,7 +348,7 @@ def humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player): #just so we 
                 return -1
 
 
-def getWinner(LARGURA, ALTURA, w, winner):
+def getWinner(LARGURA, ALTURA, NPLAYERS, w, winner):
     champs = []
     aux = -1
     for i in range(len(winner)):
@@ -366,29 +366,39 @@ def getWinner(LARGURA, ALTURA, w, winner):
     s.fill((20,20,20))
 
     pygame.display.update()
-    pygame.time.delay(300)
+    #pygame.time.delay(300)
     w.blit(s, (0,0))
     
     if (len(champs) == 1): #1 winner
-        string = "player " + str(champs[0] + 1) + " wins!"
-    else:
-        string = "players"
+        string1 = "winner:"
+        string2 = "player " + str(champs[0] + 1) + " wins!"
+    elif len(champs) < NPLAYERS:
+        string1 = "winners:"
+        string2 = "players"
         for i in range(len(champs)):
             if i != 0:
-                string += ", " + str(champs[i] + 1)
+                string2 += ", " + str(champs[i] + 1)
             else:
-               string += " " + str(champs[i] + 1) 
-        string += " win!"
+               string2 += " " + str(champs[i] + 1) 
+        string2 += " win!"
+    else:
+        string1 = ""
+        string2 = "it's a draw"
     
-    text_w = MAIN_FONT.render(str(string), True,LIGHT_GREEN)
+    text_w = MAIN_FONT.render(str(string1), True,LIGHT_GREEN)
+    textwRect = text_w.get_rect()
+    textwRect.center = (LARGURA // 2, ALTURA // 2 - ALTURA // 7 )
+    w.blit(text_w,textwRect)
+
+    text_w = MAIN_FONT.render(str(string2), True,LIGHT_GREEN)
     textwRect = text_w.get_rect()
     textwRect.center = (LARGURA // 2, ALTURA // 2)
+    w.blit(text_w,textwRect)
     
     text_t = SMALL_FONT.render("TAP TO CONTINUE",True, WHITE)
     texttRect = text_t.get_rect()
     texttRect.center = (LARGURA//2,(ALTURA//2)+(ALTURA//7))
-    
-    w.blit(text_w,textwRect)
+
     w.blit(text_t,texttRect)
     
     pygame.display.update()
@@ -420,12 +430,19 @@ def thinking(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, player):
 
 def notThinking(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT):
     pygame.draw.rect(SCREEN, (20,20,20), (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
-        
-    """ text_surf, text_rectangle = text_objects('Succesfully changed number of players to '+ str(numplayers), SMALL_TEXT, WHITE)
-    text_rectangle.center = (int(SCREEN_WIDTH / 1.16), int(SCREEN_HEIGHT * 0.95))
+    pygame.display.update()
+
+
+def printsPlayer(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, player):         
+    text_surf, text_rectangle = text_objects('Player ' + str(player + 1), SMALL_FONT, (207, 207, 207))
+    text_rectangle.center = (int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT * 0.024))
     SCREEN.blit(text_surf, text_rectangle)
     pygame.display.update()
-    pygame.time.delay(1000) """
+
+
+def unprintsPlayer(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT):
+    pygame.draw.rect(SCREEN, (20,20,20), (int(SCREEN_WIDTH  * 0.44), int(SCREEN_HEIGHT * 0), int(1 / 8 * SCREEN_WIDTH), int(0.066 * SCREEN_HEIGHT)))
+    pygame.display.update()
 
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
@@ -453,14 +470,16 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
         for i in range (BOARDSIZE):
             Board.append([-1 for i in range(BOARDSIZE)])
             
-        player = 0
+        player = r % NPLAYERS
         w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
         t = 0
         
         while not sair:
             pygame.display.update()
             for event in pygame.event.get():
-                player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player)    
+                printsPlayer(w, LARGURA, ALTURA, player)
+                player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
+                unprintsPlayer(w, LARGURA, ALTURA)   
                 if player == -1:
                     return
                 win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
@@ -486,7 +505,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             if t == 2:
                 break
 
-    getWinner(LARGURA, ALTURA, w, winner)
+    getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)
 
     return
 
@@ -538,15 +557,15 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
         for i in range (BOARDSIZE):
             Board.append([-1 for i in range(BOARDSIZE)])
             
-        player = 0
+        player = r % NPLAYERS
         w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
         t = 0
-        first = False if (r%2 == 0) else True
         
         while not sair:
             pygame.display.update()
             for event in pygame.event.get():
-                if (player > 0 and first) or (player < NPLAYERS - 1 and not first):
+                if (player > 0): #or (player < NPLAYERS - 1 and not first):
+                    printsPlayer(w, LARGURA, ALTURA, player)
                     if bot[0]: #easy just random
                         freePos = freePosFunc(Board, BOARDSIZE)
                         randomBot(Board, dist, xo, yo, w, player, freePos)
@@ -564,6 +583,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                         best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp)
                         notThinking(w, LARGURA, ALTURA)
                         Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
+                    unprintsPlayer(w, LARGURA, ALTURA)
                     win = Wins(BOARDSIZE, w, Board, dist, xo, yo)
                     t = winsAnalise(LARGURA, ALTURA, w, win, player)
                     if t != 0:
@@ -577,7 +597,9 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                         player = 0
 
                 elif t == 0:
+                    printsPlayer(w, LARGURA, ALTURA, player)
                     player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
+                    unprintsPlayer(w, LARGURA, ALTURA)
                     if player == -1:
                         return   
                     win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
@@ -600,7 +622,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                 break
 
     
-    getWinner(LARGURA, ALTURA, w, winner)
+    getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)
     return
 
     #acho q isto não é preciso mas i'm scared de apagar lol
