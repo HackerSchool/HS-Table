@@ -107,8 +107,6 @@ def Wins(BOARDSIZE,screen,Board,dist,xo,yo):
         check_h = True # True quando todos os elementos de uma linha são iguais (e não vazios)
         for c in range (BOARDSIZE):
             if (Board[c][l] != Board[0][l]) or (Board[c][l] == -1):
-                if Board[c][l] == -1: 
-                    check_e = False
                 check_h = False
                 break
         if check_h == True: 
@@ -122,8 +120,6 @@ def Wins(BOARDSIZE,screen,Board,dist,xo,yo):
         check_v = True # True quando todos os elementos de uma coluna são iguais (e não vazios)
         for l in range (BOARDSIZE):
             if (Board[c][l] != Board[c][0]) or (Board[c][l] == -1):
-                if Board[c][l] == -1: 
-                    check_e = False
                 check_v = False
                 break
         if check_v == True: 
@@ -135,8 +131,6 @@ def Wins(BOARDSIZE,screen,Board,dist,xo,yo):
     check_d1 = True 
     for c in range(BOARDSIZE):
         if ((Board[c][c] != Board[0][0]) or (Board[c][c] == -1)):
-            if Board[c][c] == -1: 
-                check_e = False
             check_d1 = False
             break
     if check_d1 == True:
@@ -148,8 +142,6 @@ def Wins(BOARDSIZE,screen,Board,dist,xo,yo):
     check_d2 = True 
     for c in range(BOARDSIZE):
         if (Board[BOARDSIZE-1-c][c] != Board[BOARDSIZE-1][0]) or (Board[BOARDSIZE-1-c][c] == -1):
-            if Board[BOARDSIZE-1-c][c] == -1: 
-                check_e = False
             check_d2 = False
             break
         
@@ -160,11 +152,13 @@ def Wins(BOARDSIZE,screen,Board,dist,xo,yo):
         return r
             
     if check_e == True: 
-        r = "e"
+        for l in range (BOARDSIZE):
+            for c in range (BOARDSIZE):
+                if Board[c][l] == -1:
+                    check_e = False
+                    return 0
+        return "e"
     
-    else: r = 0
-    
-    return r
 
 
 def freePosFunc(Board, BOARDSIZE): #creates a list of possible valid plays
@@ -371,7 +365,7 @@ def getWinner(LARGURA, ALTURA, NPLAYERS, w, winner):
     
     if (len(champs) == 1): #1 winner
         string1 = "winner:"
-        string2 = "player " + str(champs[0] + 1) + " wins!"
+        string2 = "player " + str(champs[0] + 1)
     elif len(champs) < NPLAYERS:
         string1 = "winners:"
         string2 = "players"
@@ -380,7 +374,6 @@ def getWinner(LARGURA, ALTURA, NPLAYERS, w, winner):
                 string2 += ", " + str(champs[i] + 1)
             else:
                string2 += " " + str(champs[i] + 1) 
-        string2 += " win!"
     else:
         string1 = ""
         string2 = "it's a draw"
@@ -390,7 +383,7 @@ def getWinner(LARGURA, ALTURA, NPLAYERS, w, winner):
     textwRect.center = (LARGURA // 2, ALTURA // 2 - ALTURA // 7 )
     w.blit(text_w,textwRect)
 
-    text_w = MAIN_FONT.render(str(string2), True,LIGHT_GREEN)
+    text_w = MAIN_FONT.render(str(string2), True, LIGHT_GREEN)
     textwRect = text_w.get_rect()
     textwRect.center = (LARGURA // 2, ALTURA // 2)
     w.blit(text_w,textwRect)
@@ -562,48 +555,48 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
         t = 0
         
         while not sair:
-            pygame.display.update()
-            for event in pygame.event.get():
-                if (player > 0): #or (player < NPLAYERS - 1 and not first):
-                    printsPlayer(w, LARGURA, ALTURA, player)
-                    if bot[0]: #easy just random
-                        freePos = freePosFunc(Board, BOARDSIZE)
-                        randomBot(Board, dist, xo, yo, w, player, freePos)
-                    elif bot[1]: # only knows if he can win on the spot or if someone else can in their next move (and stops them)
-                        thinking(w, LARGURA, ALTURA, player)
-                        freePos = freePosFunc(Board, BOARDSIZE)
-                        temp = len(freePos)
-                        best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp, 1, 0)
-                        notThinking(w, LARGURA, ALTURA)
-                        Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
-                    else: #hard
-                        thinking(w, LARGURA, ALTURA, player)
-                        freePos = freePosFunc(Board, BOARDSIZE)
-                        temp = len(freePos)
-                        best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp)
-                        notThinking(w, LARGURA, ALTURA)
-                        Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
-                    unprintsPlayer(w, LARGURA, ALTURA)
-                    win = Wins(BOARDSIZE, w, Board, dist, xo, yo)
-                    t = winsAnalise(LARGURA, ALTURA, w, win, player)
-                    if t != 0:
-                        if win == 'w':
-                            winner[player] += 1
-                        t = 2
-                        break 
+            pygame.display.update()         
+            if (player > 0): #or (player < NPLAYERS - 1 and not first):
+                printsPlayer(w, LARGURA, ALTURA, player)
+                if bot[0]: #easy just random
+                    freePos = freePosFunc(Board, BOARDSIZE)
+                    randomBot(Board, dist, xo, yo, w, player, freePos)
+                elif bot[1]: # only knows if he can win on the spot or if someone else can in their next move (and stops them)
+                    thinking(w, LARGURA, ALTURA, player)
+                    freePos = freePosFunc(Board, BOARDSIZE)
+                    temp = len(freePos)
+                    best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp, 1, 0)
+                    notThinking(w, LARGURA, ALTURA)
+                    Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
+                else: #hard
+                    thinking(w, LARGURA, ALTURA, player)
+                    freePos = freePosFunc(Board, BOARDSIZE)
+                    temp = len(freePos)
+                    best = GodBot(NPLAYERS, Board, BOARDSIZE, player, freePos, temp)
+                    notThinking(w, LARGURA, ALTURA)
+                    Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
+                unprintsPlayer(w, LARGURA, ALTURA)
+                win = Wins(BOARDSIZE, w, Board, dist, xo, yo)
+                t = winsAnalise(LARGURA, ALTURA, w, win, player)
+                if t != 0:
+                    if win == 'w':
+                        winner[player] += 1
+                    t = 2
+                    break 
 
-                    player += 1
-                    if player == NPLAYERS:
-                        player = 0
+                player += 1
+                if player == NPLAYERS:
+                    player = 0
 
-                elif t == 0:
+            elif t == 0:
+                for event in pygame.event.get():
                     printsPlayer(w, LARGURA, ALTURA, player)
                     player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
                     unprintsPlayer(w, LARGURA, ALTURA)
                     if player == -1:
                         return   
                     win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
-                    t = winsAnalise(LARGURA, ALTURA, w, win, player)                            
+                    t = winsAnalise(LARGURA, ALTURA, w, win, player)                        
                     if t != 0:
                         if win == 'w':
                             winner[player] += 1
@@ -612,6 +605,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                     player += 1
                     if player >= NPLAYERS:
                         player = 0 
+                    break
             
             #adicionei isto para se carregarem no 'x' a meio de um jogo
             if event.type == pygame.QUIT:

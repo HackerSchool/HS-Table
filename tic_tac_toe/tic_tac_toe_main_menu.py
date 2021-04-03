@@ -356,7 +356,7 @@ def main_menu():
             pygame.quit()
 
         if start_game:
-            galo(players,boardsize,rondas)
+            galo_BOT(players,boardsize,rondas, 0)
             main_menu()
 
         pygame.display.update(MAIN_BUTTONS_LAYOUT)
