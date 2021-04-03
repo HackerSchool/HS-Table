@@ -80,6 +80,11 @@ class Ball():
         self.vel_x -= 0.001*self.vel_x #atrito
         self.vel_y -= 0.001*self.vel_y #atrito
 
+        if sqrt(self.vel_x ** 2 + self.vel_y ** 2) < 0.1: 
+            self.vel_x = 0
+            self.vel_y = 0
+
+
     def CheckCollision(self, ball):
         """ Checks if a ball has collided with self """
 
@@ -119,12 +124,38 @@ class Ball():
                 self.Move()
                 ball.Move()
 
+class Hole():
+    def __init__(self, x, y, radius, color):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.color = color
+    
+    def Render(self):
+        """ Renders the hole """
+
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+    def CheckCollision(self, ball):
+        """ Checks if a ball has collided with self """
+
+        # vector that links the balls
+        dist_x = ball.x - self.x
+        dist_y = ball.y - self.y
+
+        # see if collided
+        dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+        if dist <= self.radius:
+            return True
+        
+        return False
 
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Project Kobe')
+pygame.display.set_caption('Snooker')
 
 walls = [Border(0, 0, width, 10, BLACK), Border(0, 0, 10, height, BLACK), Border(width - 10, 0, 10, height, BLACK), Border(0, height -10, width, 10, BLACK)]
-
+holes = [Hole(0, 0, 100, BLACK)]
 balls = []
 
 for i in range(0, int(input("Numero de bolas: "))):
@@ -140,6 +171,9 @@ running = True
 while running:
     pygame.time.delay(10)
     screen.fill(DARK_GREEN)
+    
+    for hole in holes:
+        hole.Render()
 
     for b in balls:
         b.Render()
@@ -150,12 +184,22 @@ while running:
 
     pygame.display.flip()
 
+    balls_to_remove = []
+
     for i in range(0, len(balls)):
         for j in range(i+1, len(balls)):
             balls[i].CheckCollision(balls[j])
 
         for wall in walls:
             wall.CheckCollision(balls[i])
+
+        for hole in holes:
+            if hole.CheckCollision(balls[i]):
+                balls_to_remove.append(i)
+
+    for i in balls_to_remove:
+        balls.pop(i)
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
