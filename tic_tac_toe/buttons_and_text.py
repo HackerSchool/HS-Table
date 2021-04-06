@@ -14,6 +14,10 @@ SCREEN_HEIGHT = int(pygame.display.Info().current_h)
 
 SCREEN_WIDTH, SCREEN_HEIGHT = int(0.75 * SCREEN_WIDTH), int(0.75 * SCREEN_HEIGHT) #Tirar quando passar para a mesa
 
+FPS = 60 #Sets a limit of FPS to be able to run better
+clock = pygame.time.Clock()
+clock.tick(FPS)
+
 #Create texts
 MAIN_MENU_TEXT = pygame.font.Font(FONT_ORIGAMI, int(115 / 1080 * SCREEN_HEIGHT))
 MENU_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(115 / 1080 * SCREEN_HEIGHT))
