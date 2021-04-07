@@ -2,6 +2,7 @@
 # - REMOVER LINHAS 1 E 19 ('OS' DEIXA DE SER NECESSÁRIO)
 # - COLOCAR FULLSCREEN = True (linha 26)
 # - DEFINIR LIMITE PARA NÚMERO DE BOARDSIZE
+# - ALTERAR PYGAME.QUIT() POR FORMA A PASSAR PARA O PROGRAMA DO MAIN_ENVIRONMENT QUANDO SE SAI DO JOGO
 
 import os
 import pygame
@@ -10,7 +11,6 @@ from Galo import *
 from buttons_and_text import *
 
 #DEFINING SCREEN, BUTTONS, TEXT AND LAYOUTS
-
 #Create screen
 pygame.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1' #Centers the window screen
@@ -24,6 +24,12 @@ else:
     SCREEN_WIDTH, SCREEN_HEIGHT = int(0.75 * SCREEN_WIDTH), int(0.75 * SCREEN_HEIGHT)
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+#Default variable values
+NPLAYERS = 2
+BOARDSIZE = 3
+NROUNDS = 3
+BOT_DIFF = 0
+difficulty = 'E A S Y'
 
 #CHOOSING SETTINGS MENU
 def choose_settings_menu(settings_type):
@@ -59,18 +65,25 @@ def choose_settings_menu(settings_type):
         pygame.time.delay(1000)
 
     setup_choose_settings_menu(settings_type)
+    
+    #Define current variable values in the interface
     if settings_type == 'number of players':
-        num_players = 2
+        global NPLAYERS
+        num_players = NPLAYERS
         choose_settings(num_players)
     elif settings_type == 'number of rounds':
-        num_rounds = 3
+        global NROUNDS
+        num_rounds = NROUNDS
         choose_settings(num_rounds)
     elif settings_type == 'board size':
-        num_board = 3
+        global BOARDSIZE
+        num_board = BOARDSIZE
         choose_settings(num_board)
     elif settings_type == 'bot difficulty':
-        difficulty = 'E A S Y'
-        num_diff = 0
+        global BOT_DIFF
+        global difficulty
+        difficulty = str(difficulty)
+        num_diff = BOT_DIFF
         choose_settings(difficulty)
 
     settingsmenu = True
@@ -78,7 +91,7 @@ def choose_settings_menu(settings_type):
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pygame.quit() #Mudar isto quando main_environment estiver acabado
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
 
@@ -156,25 +169,21 @@ def choose_settings_menu(settings_type):
             pygame.time.delay(100)
 
             if settings_type == 'number of players':
-                global NPLAYERS
                 NPLAYERS = int(num_players)
                 changes_done(settings_type, NPLAYERS)
                 return NPLAYERS
 
             elif settings_type == 'number of rounds':
-                global NROUNDS
                 NROUNDS = int(num_rounds)
                 changes_done(settings_type, NROUNDS)
                 return NROUNDS
 
             elif settings_type == 'board size':
-                global BOARDSIZE
                 BOARDSIZE = int(num_board)
                 changes_done(settings_type, BOARDSIZE)
                 return BOARDSIZE
 
             elif settings_type == 'bot difficulty':
-                global BOT_DIFF
                 BOT_DIFF = int(num_diff)
                 diff_changed = difficulty.replace(' ', '').lower()
                 changes_done(settings_type, diff_changed)
@@ -215,7 +224,7 @@ def settings_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pygame.quit() #Mudar isto quando main_environment estiver acabado
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
@@ -266,7 +275,7 @@ def start_game():
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pygame.quit() #Mudar isto quando main_environment estiver acabado
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
 
@@ -307,7 +316,7 @@ def main_menu():
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pygame.quit() #Mudar isto quando main_environment estiver acabado
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
@@ -321,13 +330,10 @@ def main_menu():
 
         elif button(SCREEN,'Q U I T   G A M E', *MAIN_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
-            pygame.quit()
+            pygame.quit() #Mudar isto quando main_environment estiver acabado
 
         pygame.display.update(MAIN_BUTTONS_LAYOUT)
 
-NPLAYERS = 2
-BOARDSIZE = 3
-NROUNDS = 3
-BOT_DIFF = 0
+
 pygame.display.set_caption('TIC-TAC-TOE')
 main_menu()
