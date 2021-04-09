@@ -21,6 +21,10 @@ def AngleVector(x, y):
 
     return angle 
 
+def MagnitudeVector(x, y):
+    """ Returns the magnitude of a vector """
+    return sqrt(x**2 + y**2)
+
 class Border():
     def __init__(self, x, y, w, h, color):
         self.x = x
@@ -77,13 +81,31 @@ class Ball():
         self.x += self.vel_x
         self.y += self.vel_y
 
-        self.vel_x -= 0.001*self.vel_x #atrito
-        self.vel_y -= 0.001*self.vel_y #atrito
+        # atrito
+        self.ChangeVelMagnitude(self.Velocity*0.999)
 
-        if sqrt(self.vel_x ** 2 + self.vel_y ** 2) < 0.1: 
+        print(self.Velocity, self.x)
+
+        # self.vel_x -= 0.001*self.vel_x #atrito
+        # self.vel_y -= 0.001*self.vel_y #atrito
+
+        if self.Velocity < 0.1: 
             self.vel_x = 0
             self.vel_y = 0
 
+    @property
+    def Velocity(self):
+        return MagnitudeVector(self.vel_x, self.vel_y)
+
+    def ChangeVelMagnitude(self, magnitude):
+        """ Changes the magnitude of the velocity, maintaining the direction """
+
+        original_magnitude = self.Velocity
+
+        if original_magnitude == 0: return
+
+        self.vel_x *= magnitude/original_magnitude
+        self.vel_y *= magnitude/original_magnitude
 
     def CheckCollision(self, ball):
         """ Checks if a ball has collided with self """
@@ -98,8 +120,8 @@ class Ball():
         if dist <= self.radius + ball.radius:
 
             # calculate modulus of velocitys
-            vel_self = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
-            vel_ball = sqrt(ball.vel_x ** 2 + ball.vel_y ** 2)
+            vel_self = self.Velocity
+            vel_ball = ball.Velocity
 
             vel_self *= 0.95 #loss of energy
             vel_ball *= 0.95
@@ -147,6 +169,8 @@ class Hole():
         dist = sqrt(dist_x ** 2 + dist_y ** 2)
 
         if dist <= self.radius:
+            self.vel_x = dist_x
+            self.vel_y = dist_y
             return True
         
         return False
@@ -157,12 +181,17 @@ pygame.display.set_caption('Snooker')
 walls = [Border(0, 0, width, 10, BLACK), Border(0, 0, 10, height, BLACK), Border(width - 10, 0, 10, height, BLACK), Border(0, height -10, width, 10, BLACK)]
 holes = [Hole(0, 0, 100, BLACK)]
 balls = []
+balls_in_hole = []
 
-for i in range(0, int(input("Numero de bolas: "))):
+# for i in range(0, int(input("Numero de bolas: "))):
+for i in range(0, 10):
     balls.append(Ball(randint(50, width-50), randint(50, height-50), 50, (randint(0,255), randint(0,255), randint(0,255))))
 
     balls[i].vel_x = randint(-10, 10)
     balls[i].vel_y = randint(-10, 10)
+# balls = [Ball(500, 500, 50, (255, 255, 255))]
+# balls[0].vel_x = 100
+# balls[0].vel_y = 0
 
 pygame.display.flip()
 
@@ -176,6 +205,10 @@ while running:
         hole.Render()
 
     for b in balls:
+        b.Render()
+        b.Move()
+
+    for b in balls_in_hole:
         b.Render()
         b.Move()
 
@@ -197,9 +230,23 @@ while running:
             if hole.CheckCollision(balls[i]):
                 balls_to_remove.append(i)
 
-    for i in balls_to_remove:
-        balls.pop(i)
+    balls_to_remove.sort(reverse=True)
 
+    for i in balls_to_remove:
+        ball = balls.pop(i)
+
+        balls_in_hole.append(ball)
+    
+    balls_to_remove = []
+
+    for i in range(0, len(balls_in_hole)):
+        ball.radius -= 1
+        if ball.radius <= 0:
+            balls_to_remove.append(i)
+
+    balls_to_remove.sort(reverse=True)
+    for i in balls_to_remove:
+        balls_in_hole.pop(i)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
