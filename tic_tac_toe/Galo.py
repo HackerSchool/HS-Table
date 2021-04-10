@@ -458,6 +458,7 @@ def pause(w,s):
             return 3
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
+    print("....")
 
     winner = []
     for i in range(NPLAYERS): #initialize vector with number of wins for each player
@@ -485,81 +486,49 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             
         player = r % NPLAYERS
         w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
-        t = 0
         
         while not sair:
             pygame.display.update()
-            for event in pygame.event.get():
-                printsPlayer(w, LARGURA, ALTURA, player)
-                p = player
-                player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
-                unprintsPlayer(w, LARGURA, ALTURA)   
-                if player == -1:
+            #for event in pygame.event.get():
+            printsPlayer(w, LARGURA, ALTURA, player)
+            p = player
+            player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
+            unprintsPlayer(w, LARGURA, ALTURA)   
+            if player == -1:
+                return
+            elif player == -2:
+                option = pause(w,s)
+                if option == 1:         #resume
+                    pygame.time.delay(100)
+                    w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                    for l in range (BOARDSIZE):
+                        for c in range (BOARDSIZE):
+                            if (Board[c][l] != -1):
+                                player_d = Board[c][l]
+                                shapes(dist, xo, yo, w, player_d, c, l)   
+                    player = p - 1
+                elif option == 2:       #restart
+                    pygame.time.delay(100)
+                    return -1         
+                elif option == 3:       #quit
+                    pygame.time.delay(100)
                     return
-                elif player == -2:
-                    option = pause(w,s)
-                    if option == 1:         #resume
-                        pygame.time.delay(100)
-                        w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
-                        for l in range (BOARDSIZE):
-                            for c in range (BOARDSIZE):
-                                if (Board[c][l] != -1):
-                                    player_d = Board[c][l]
-                                    shapes(dist, xo, yo, w, player_d, c, l)   
-                        player = p - 1
-                    elif option == 2:       #restart
-                        pygame.time.delay(100)
-                        return -1         
-                    elif option == 3:       #quit
-                        pygame.time.delay(100)
-                        return
-                    
-                win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
-            
-                t = winsAnalise(s,LARGURA, ALTURA, w, win, player)
-                 
-                        
-                if t != 0: #draw or victory
-                    if win == 'w':
-                        winner[player] += 1
-                    t = 2
-                    break 
-                player += 1
-                if player >= NPLAYERS:
-                    player = 0 
                 
-                print (player)
-            
-                #adicionei isto para se carregarem no 'x' a meio de um jogo
-                if event.type == pygame.QUIT:
-                    sair = True
-                    return
-
-            if t == 2:
-                break
+            win = Wins(BOARDSIZE,w,Board,dist,xo,yo)                
+                    
+            if winsAnalise(s,LARGURA, ALTURA, w, win, player): #draw or victory
+                if win == 'w':
+                    winner[player] += 1
+                break 
+            player += 1
+            if player >= NPLAYERS:
+                player = 0 
+        
 
     getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)
-
+    print("here!")
     return
 
-    #acho q isto não é preciso mas i'm scared de apagar lol
-    """for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            sair = True
-            break
-        if event.type == pygame.QUIT:
-            sair = True
-            pygame.quit()"""
-    
-    """ while sair:
-        pygame.display.update()
-        if t != 0:
-            break
-            
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sair = False
-                return """
 
 
 def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
@@ -592,7 +561,6 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
             
         player = r % NPLAYERS
         w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
-        t = 0
         
         while not sair:
             pygame.display.update()         
@@ -617,8 +585,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                     Play(Board, dist, xo, yo, w,player,best[0][0],best[0][1])
                 unprintsPlayer(w, LARGURA, ALTURA)
                 win = Wins(BOARDSIZE, w, Board, dist, xo, yo)
-                t = winsAnalise(s,LARGURA, ALTURA, w, win, player)
-                if t != 0:
+                if winsAnalise(s,LARGURA, ALTURA, w, win, player):
                     if win == 'w':
                         winner[player] += 1
                     t = 2
@@ -628,51 +595,40 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                 if player == NPLAYERS:
                     player = 0
 
-            elif t == 0:
-                for event in pygame.event.get():
-                    printsPlayer(w, LARGURA, ALTURA, player)
-                    p = player
-                    player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
-                    unprintsPlayer(w, LARGURA, ALTURA)
-                    if player == -1:
-                        return   
-                    elif player == -2:
-                        option = pause(w,s)
-                        if option == 1:
-                            pygame.time.delay(100)
-                            w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
-                            for l in range (BOARDSIZE):
-                                for c in range (BOARDSIZE):
-                                    if (Board[c][l] != -1):
-                                        player_d = Board[c][l]
-                                        shapes(dist, xo, yo, w, player_d, c, l)   
-                            player = p - 1
-                        elif option == 2:
-                            pygame.time.delay(100)
-                            return -1   
-                        elif option == 3:
-                            sair = True
-                            pygame.time.delay(100)
-                            return 
-                    win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
-                    t = winsAnalise(s,LARGURA, ALTURA, w, win, player)                        
-                    if t != 0:
-                        if win == 'w':
-                            winner[player] += 1
-                        t = 2
-                        break 
-                    player += 1
-                    if player >= NPLAYERS:
-                        player = 0 
-                    break
-            
-                #adicionei isto para se carregarem no 'x' a meio de um jogo
-                    if event.type == pygame.QUIT:
+            else:
+                printsPlayer(w, LARGURA, ALTURA, player)
+                p = player
+                player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
+                unprintsPlayer(w, LARGURA, ALTURA)
+                if player == -1:
+                    return   
+                elif player == -2:
+                    option = pause(w,s)
+                    if option == 1:
+                        pygame.time.delay(100)
+                        w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                        for l in range (BOARDSIZE):
+                            for c in range (BOARDSIZE):
+                                if (Board[c][l] != -1):
+                                    player_d = Board[c][l]
+                                    shapes(dist, xo, yo, w, player_d, c, l)   
+                        player = p - 1
+                    elif option == 2:
+                        pygame.time.delay(100)
+                        return -1   
+                    elif option == 3:
                         sair = True
-                        return
-
-            if t == 2: 
-                break
+                        pygame.time.delay(100)
+                        return 
+                win = Wins(BOARDSIZE,w,Board,dist,xo,yo)                       
+                if winsAnalise(s,LARGURA, ALTURA, w, win, player):
+                    if win == 'w':
+                        winner[player] += 1
+                    t = 2
+                    break 
+                player += 1
+                if player >= NPLAYERS:
+                    player = 0 
 
     
     getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)

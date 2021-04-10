@@ -281,14 +281,14 @@ def start_game():
 
         if button(SCREEN,'P L A Y  W I T H  H U M A N S', *START_GAME_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
-            galo(NPLAYERS, BOARDSIZE, NROUNDS)
-            if galo (NPLAYERS, BOARDSIZE, NROUNDS) == -1: galo(NPLAYERS, BOARDSIZE, NROUNDS)
+            if galo (NPLAYERS, BOARDSIZE, NROUNDS) == -1: 
+                galo(NPLAYERS, BOARDSIZE, NROUNDS)
             main_menu()
 
         elif button(SCREEN,'P L A Y  W I T H  C P U', *START_GAME_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            galo_BOT(NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF)
-            if galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF) == -1: galo_BOT(NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF)
+            if galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF) == -1:
+                galo_BOT(NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF)
             main_menu()
 
         elif button(SCREEN,'R E T U R N', *START_GAME_BUTTONS_LAYOUT[2], click):
