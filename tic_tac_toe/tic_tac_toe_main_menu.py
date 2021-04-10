@@ -29,6 +29,7 @@ NPLAYERS = 2
 BOARDSIZE = 3
 NROUNDS = 3
 BOT_DIFF = 0
+NBOTS = 1
 difficulty = 'E A S Y'
 
 #CHOOSING SETTINGS MENU
@@ -85,6 +86,10 @@ def choose_settings_menu(settings_type):
         difficulty = str(difficulty)
         num_diff = BOT_DIFF
         choose_settings(difficulty)
+    elif settings_type == 'number of bot players':
+        global NBOTS
+        num_bots = NBOTS
+        choose_settings(num_bots)
 
     settingsmenu = True
     while settingsmenu:
@@ -122,16 +127,20 @@ def choose_settings_menu(settings_type):
             elif settings_type == 'bot difficulty':
                 if difficulty == 'E A S Y':
                     num_diff = 0
-
                 elif difficulty == 'M E D I U M':
                     difficulty = 'E A S Y'
                     num_diff = 0
-                    choose_settings(difficulty)
-
                 elif difficulty == 'H A R D':
                     difficulty = 'M E D I U M'
                     num_diff = 1
-                    choose_settings(difficulty)
+                choose_settings(difficulty)
+
+            elif settings_type == 'number of bot players':
+                if num_bots > NPLAYERS or num_bots <= 1:
+                    pass
+                elif num_bots < NPLAYERS:
+                    num_bots -= 1
+                choose_settings(num_bots)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
@@ -155,15 +164,19 @@ def choose_settings_menu(settings_type):
                 if difficulty == 'E A S Y':
                     difficulty = 'M E D I U M'
                     num_diff = 1
-                    choose_settings(difficulty)
-
                 elif difficulty == 'M E D I U M':
                     difficulty = 'H A R D'
                     num_diff = 2
-                    choose_settings(difficulty)
-
                 elif difficulty == 'H A R D':
-                    num_diff = 2   
+                    num_diff = 2 
+                choose_settings(difficulty)  
+
+            elif settings_type == 'number of bot players':
+                if num_bots >= NPLAYERS - 1:
+                    pass
+                elif num_bots < NPLAYERS - 1 or num_bots <= 1:
+                    num_bots += 1
+                choose_settings(num_bots)
 
         elif button(SCREEN,'C O N F I R M ', *CHOOSE_SET_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
@@ -188,20 +201,28 @@ def choose_settings_menu(settings_type):
                 diff_changed = difficulty.replace(' ', '').lower()
                 changes_done(settings_type, diff_changed)
                 return BOT_DIFF
+            
+            elif settings_type == 'number of bot players':
+                NBOTS = int(num_bots)
+                changes_done(settings_type, NBOTS)
+                return NBOTS
 
         elif button(SCREEN,'R E T U R N', *CHOOSE_SET_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
             if settings_type == 'number of players':
-                return -1, -1
+                return
             
             elif settings_type == 'number of rounds':
-                return -1
+                return
 
             elif settings_type == 'board size':
-                return -1
+                return
             
             elif settings_type == 'bot difficulty':
-                return -1
+                return
+
+            elif settings_type == 'number of bot players':
+                main_menu()
 
         pygame.display.update(CHOOSE_SET_BUTTONS_LAYOUT)
 
@@ -231,22 +252,22 @@ def settings_menu():
         if button(SCREEN,'N U M B E R  O F  P L A Y E R S', *SETTINGS_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             NPLAYERS = choose_settings_menu('number of players')
-            setup_settings_menu()
+            settings_menu()
 
         elif button(SCREEN,'N U M B E R  O F  R O U N D S', *SETTINGS_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
             NROUNDS = choose_settings_menu('number of rounds')
-            setup_settings_menu()
+            settings_menu()
 
         elif button(SCREEN,'B O A R D  S I Z E', *SETTINGS_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
             BOARDSIZE = choose_settings_menu('board size')
-            setup_settings_menu()
+            settings_menu()
         
         elif button(SCREEN,'B O T  D I F F I C U L T Y', *SETTINGS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
             BOT_DIFF = choose_settings_menu('bot difficulty')
-            setup_settings_menu()
+            settings_menu()
 
         elif button(SCREEN,'R E T U R N', *SETTINGS_BUTTONS_LAYOUT[4], click):
             pygame.time.delay(100)
@@ -285,10 +306,11 @@ def start_game():
                 galo(NPLAYERS, BOARDSIZE, NROUNDS)
             main_menu()
 
-        elif button(SCREEN,'P L A Y  W I T H  C P U', *START_GAME_BUTTONS_LAYOUT[1], click):
+        elif button(SCREEN,'P L A Y  W I T H  B O T S', *START_GAME_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            if galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF) == -1:
-                galo_BOT(NPLAYERS, BOARDSIZE, NROUNDS,BOT_DIFF)
+            NBOTS = choose_settings_menu('number of bot players')
+            if galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF, NBOTS) == -1:
+                galo_BOT(NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF, NBOTS)
             main_menu()
 
         elif button(SCREEN,'R E T U R N', *START_GAME_BUTTONS_LAYOUT[2], click):

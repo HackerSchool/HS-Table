@@ -529,7 +529,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
 
 
 
-def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
+def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
 
     winner = []
     for i in range(NPLAYERS): #initialize vector with number of wins for each player
@@ -561,8 +561,9 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
         w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
         
         while not sair:
-            pygame.display.update()         
-            if (player > 0): #or (player < NPLAYERS - 1 and not first):
+            pygame.display.update()    
+            #DESTA MANEIRA OS JOGADORES HUMANOS COMEÇAM PRIMEIRO     
+            if (player >= NPLAYERS - NBOTS): # (players > 0) or (player < NPLAYERS - 1 and not first):
                 printsPlayer(w, LARGURA, ALTURA, player)
                 if bot[0]: #easy just random
                     freePos = freePosFunc(Board, BOARDSIZE)
