@@ -60,7 +60,66 @@ class Border():
 
             if dist < ball.radius:
                 ball.vel_x *= -0.95 #loss of energy
+
+class taco():
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.vel_x = 0
+        self.vel_y = 0
+        self.radius = radius    
+    
+    def move(self, balls, first = True, stop = False):
+        while not stop:                 
+            for event in pygame.event.get(): 
+                pygame.time.delay(50) #so that the 2 positions are kinda far from each other               
+                if pygame.mouse.get_pressed()[0]:                    
+                    self.x = event.pos[0]
+                    self.y = event.pos[1]
+                    if first:
+                        self.vel_x = 0
+                        self.vel_y = 0
+                        first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
+                    else:
+                        self.vel_x = (self.x - stickPrev[0]) / 10 #we can play with this 10
+                        self.vel_y = (self.y - stickPrev[1]) / 10
+
+                    stickPrev = event.pos
+
+                    if stick.CheckCollision(balls[0]):
+                        stop = True
+                        break
+    
+    @property
+    def Velocity(self):
+        return MagnitudeVector(self.vel_x, self.vel_y)
+
+    def CheckCollision(self, ball): 
+        """ Checks if a ball has collided with self """
         
+        dist_x = ball.x - self.x
+        dist_y = ball.y - self.y
+
+        # see if collided
+        dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+        if dist <= ball.radius: 
+            # calculate modulus of velocitys
+            vel_self = self.Velocity
+            vel_ball = 0
+
+            # calculate incidence angles of balls
+            angle_self = AngleVector(self.vel_x, self.vel_y)
+
+            # calculate the angle of collision
+            angle_ab = AngleVector(dist_x, dist_y)
+
+            ball.vel_x = vel_self * cos(angle_self - angle_ab) * cos(angle_ab) + vel_ball * sin(- angle_ab) * cos(angle_ab + pi / 2)
+            ball.vel_y = vel_self * cos(angle_self - angle_ab) * sin(angle_ab) + vel_ball * sin(- angle_ab) * sin(angle_ab + pi / 2)
+            return 1
+
+        return 0
+
 class Ball():
     def __init__(self, x, y, radius, color):
         self.x = x
@@ -84,7 +143,7 @@ class Ball():
         # atrito
         self.ChangeVelMagnitude(self.Velocity*0.999)
 
-        print(self.Velocity, self.x)
+        #print(self.Velocity, self.x)
 
         # self.vel_x -= 0.001*self.vel_x #atrito
         # self.vel_y -= 0.001*self.vel_y #atrito
@@ -175,6 +234,14 @@ class Hole():
         
         return False
 
+
+def stoped(balls):
+    for b in balls:
+        if b.vel_x != 0 and b.vel_y != 0:
+            return 0
+    return 1
+
+
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Snooker')
 
@@ -183,19 +250,27 @@ holes = [Hole(0, 0, 100, BLACK)]
 balls = []
 balls_in_hole = []
 
-# for i in range(0, int(input("Numero de bolas: "))):
-for i in range(0, 10):
-    balls.append(Ball(randint(50, width-50), randint(50, height-50), 50, (randint(0,255), randint(0,255), randint(0,255))))
 
-    balls[i].vel_x = randint(-10, 10)
-    balls[i].vel_y = randint(-10, 10)
+balls.append(Ball(100, 200, 50, WHITE))
+balls[0].vel_x = 0
+balls[0].vel_y = 0
+# for i in range(0, int(input("Numero de bolas: "))):
+for i in range(1, 9):
+    balls.append(Ball(100 + 110 * i, 200, 50, (randint(0,255), randint(0,255), randint(0,255))))
+
+    balls[i].vel_x = 0#randint(-10, 10)
+    balls[i].vel_y = 0#randint(-10, 10)
+
+
 # balls = [Ball(500, 500, 50, (255, 255, 255))]
 # balls[0].vel_x = 100
-# balls[0].vel_y = 0
+# balls[0].vel_y = 0       randint(50, height-50)
 
 pygame.display.flip()
 
 running = True
+
+stick = taco(0,0,10)
 
 while running:
     pygame.time.delay(10)
@@ -247,6 +322,10 @@ while running:
     balls_to_remove.sort(reverse=True)
     for i in balls_to_remove:
         balls_in_hole.pop(i)
+
+    if (stoped(balls)): #time for a move!
+        stick.move(balls)
+        
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
