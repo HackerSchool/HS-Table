@@ -67,13 +67,38 @@ class taco():
         self.y = y
         self.vel_x = 0
         self.vel_y = 0
-        self.radius = radius    
+        self.radius = radius 
+        self.original = pygame.image.load("taco.png").convert_alpha()
+        self.angle = AngleVector(self.vel_x, self.vel_y)
+        self.image = pygame.transform.rotate(self.original, self.angle)
+           
+
+    def render(self, pos, holes, balls, walls):
+        self.angle =  AngleVector(-self.vel_x, self.vel_y) * 180 / pi + 33
+        self.image = pygame.transform.rotate(self.original, self.angle)
+        #print(self.angle)
+        screen.blit(self.image, (pos[0] - 300, pos[1]- 300))
+        pygame.display.flip()
+        pygame.time.delay(50) 
+        screen.fill(DARK_GREEN)
     
-    def move(self, balls, first = True, stop = False):
+        for hole in holes:
+            hole.Render()
+
+        for b in balls:
+            b.Render()
+
+        for wall in walls:
+            wall.Render()
+
+        pygame.display.flip() 
+
+    
+    def move(self, balls, holes, walls, first = True, stop = False):
         while not stop:                 
-            for event in pygame.event.get(): 
-                pygame.time.delay(50) #so that the 2 positions are kinda far from each other               
-                if pygame.mouse.get_pressed()[0]:                    
+            for event in pygame.event.get():                               
+                if pygame.mouse.get_pressed()[0]:   
+                    self.render(event.pos, balls, holes, walls)                 
                     self.x = event.pos[0]
                     self.y = event.pos[1]
                     if first:
@@ -81,8 +106,8 @@ class taco():
                         self.vel_y = 0
                         first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
                     else:
-                        self.vel_x = (self.x - stickPrev[0]) / 10 #we can play with this 10
-                        self.vel_y = (self.y - stickPrev[1]) / 10
+                        self.vel_x = (self.x - stickPrev[0]) / 8 #we can play with this 10
+                        self.vel_y = (self.y - stickPrev[1]) / 8
 
                     stickPrev = event.pos
 
@@ -245,6 +270,11 @@ def stoped(balls):
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Snooker')
 
+image = pygame.image.load("taco.png").convert()
+""" screen.blit(image, (0,0))
+pygame.display.flip()
+pygame.time.delay(1500) """
+
 walls = [Border(0, 0, width, 10, BLACK), Border(0, 0, 10, height, BLACK), Border(width - 10, 0, 10, height, BLACK), Border(0, height -10, width, 10, BLACK)]
 holes = [Hole(0, 0, 100, BLACK)]
 balls = []
@@ -324,7 +354,7 @@ while running:
         balls_in_hole.pop(i)
 
     if (stoped(balls)): #time for a move!
-        stick.move(balls)
+        stick.move(balls, holes, walls)
         
 
     for event in pygame.event.get():
