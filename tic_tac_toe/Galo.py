@@ -458,7 +458,6 @@ def pause(w,s):
             return 3
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
-    print("....")
 
     winner = []
     for i in range(NPLAYERS): #initialize vector with number of wins for each player
@@ -526,7 +525,6 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
         
 
     getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)
-    print("here!")
     return
 
 
@@ -633,24 +631,3 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
     
     getWinner(LARGURA, ALTURA, NPLAYERS, w, winner)
     return
-
-    #acho q isto não é preciso mas i'm scared de apagar lol
-    """for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            sair = True
-            break
-        if event.type == pygame.QUIT:
-            sair = True
-            pygame.quit()"""
-    
-    """ while sair:
-        pygame.display.update()
-        if t != 0:
-            break
-            
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sair = False
-                return """
-            
-#galo()
