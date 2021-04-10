@@ -26,7 +26,7 @@ def makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r):
     pygame.display.set_caption ("Jogo do Galo")
     screen.fill(LIGHT_BLACK)
     
-    pygame.draw.line (screen, WHITE, ((LARGURA//19),(ALTURA//25)), ((LARGURA//19),(ALTURA//10)),10)
+    pygame.draw.line (screen, WHITE, ((LARGURA//19),(ALTURA//25)), ((LARGURA//19),(ALTURA//10)),10) #pause button
     pygame.draw.line (screen, WHITE, ((LARGURA//30),(ALTURA//25)), ((LARGURA//30),(ALTURA//10)),10)
     
     for i in range (BOARDSIZE-1):
@@ -85,7 +85,7 @@ def shapes(dist,xo,yo,screen,player,c,l):
         pygame.draw.circle(screen,LIGHT_BLACK,(xc,yc),int((dist/2)-19))
         
     else:
-    # player n: desenhar poligno com n+1 lados (ex.: player 2 -> triângulo)   
+        # player n: desenhar poligno com n+1 lados (ex.: player 2 -> triângulo)   
         points = []
         a = (2*pi)/(player+1)
         raio = int((dist/2)-10)
@@ -332,9 +332,10 @@ def humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player): #just so we 
                 if (c == -2) and (l == -2): #quando clicam na pausa
                     return -2
                 
-                if Play(Board,dist,xo,yo,w,player, c,l):
-                    # if played on valid spot increment player  
-                    return player  
+                else:                
+                    if Play(Board,dist,xo,yo,w,player, c,l):
+                        # if played on valid spot increment player  
+                        return player  
             if event.type == pygame.QUIT: 
                 sair = True #is this sair needed? não é usado nesta função
                 return -1 
@@ -446,12 +447,8 @@ def pause(w,s):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         if button(w,'R E S U M E', *MAIN_BUTTONS_LAYOUT[0], click):
-            text.set_alpha(0)
-            pygame.time.delay(3000)
-            pygame.display.update()
-            print ("yay1")
             sair = True
-            #return 1
+            return 1
             break
         elif button(w,'R E S T A R T', *MAIN_BUTTONS_LAYOUT[1], click):
             sair = True
@@ -459,7 +456,7 @@ def pause(w,s):
         elif button(w,'Q U I T', *MAIN_BUTTONS_LAYOUT[2], click):
             sair = True
             return 3
- 
+    
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
 
     winner = []
@@ -494,22 +491,28 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             pygame.display.update()
             for event in pygame.event.get():
                 printsPlayer(w, LARGURA, ALTURA, player)
+                p = player
                 player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
                 unprintsPlayer(w, LARGURA, ALTURA)   
                 if player == -1:
                     return
                 elif player == -2:
                     option = pause(w,s)
-                    if option == 1:
-                        print("yay")
+                    if option == 1:         #resume
                         pygame.time.delay(100)
-                    elif option == 2:
+                        w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                        for l in range (BOARDSIZE):
+                            for c in range (BOARDSIZE):
+                                if (Board[c][l] != -1):
+                                    player_d = Board[c][l]
+                                    shapes(dist, xo, yo, w, player_d, c, l)   
+                        player = p - 1
+                    elif option == 2:       #restart
                         pygame.time.delay(100)
-                        galo(NPLAYERS,BOARDSIZE,RONDAS)
-                    elif option == 3:
-                        sair = True
+                        return -1         
+                    elif option == 3:       #quit
                         pygame.time.delay(100)
-                        return #nem sempre funciona, não sei porquê
+                        return
                     
                 win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
             
@@ -524,6 +527,8 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
                 player += 1
                 if player >= NPLAYERS:
                     player = 0 
+                
+                print (player)
             
                 #adicionei isto para se carregarem no 'x' a meio de um jogo
                 if event.type == pygame.QUIT:
@@ -626,6 +631,7 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
             elif t == 0:
                 for event in pygame.event.get():
                     printsPlayer(w, LARGURA, ALTURA, player)
+                    p = player
                     player = humanPlay(NPLAYERS, BOARDSIZE, Board, dist, xo, yo, w, player) 
                     unprintsPlayer(w, LARGURA, ALTURA)
                     if player == -1:
@@ -633,15 +639,21 @@ def galo_BOT(NPLAYERS,BOARDSIZE,RONDAS, dificulty):
                     elif player == -2:
                         option = pause(w,s)
                         if option == 1:
-                            print("yay")
                             pygame.time.delay(100)
+                            w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                            for l in range (BOARDSIZE):
+                                for c in range (BOARDSIZE):
+                                    if (Board[c][l] != -1):
+                                        player_d = Board[c][l]
+                                        shapes(dist, xo, yo, w, player_d, c, l)   
+                            player = p - 1
                         elif option == 2:
                             pygame.time.delay(100)
-                            galo(NPLAYERS,BOARDSIZE,RONDAS)
+                            return -1   
                         elif option == 3:
                             sair = True
                             pygame.time.delay(100)
-                            return #nem sempre funciona, não sei porquê
+                            return 
                     win = Wins(BOARDSIZE,w,Board,dist,xo,yo)
                     t = winsAnalise(s,LARGURA, ALTURA, w, win, player)                        
                     if t != 0:
