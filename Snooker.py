@@ -79,7 +79,7 @@ class taco():
         #print(self.angle)
         screen.blit(self.image, (pos[0] - 300, pos[1]- 300))
         pygame.display.flip()
-        pygame.time.delay(50) 
+        pygame.time.delay(30) 
         screen.fill(DARK_GREEN)
     
         for hole in holes:
@@ -91,29 +91,48 @@ class taco():
         for wall in walls:
             wall.Render()
 
-        pygame.display.flip() 
+         
+        while True:
+            for event in pygame.event.get(): #just when taco moves again it gets erased
+                pygame.display.flip()
+                if not pygame.mouse.get_pressed()[0]:
+                    return 0, []
+                else:
+                    return 1, event.pos #it moved but button is still pressed..
 
     
-    def move(self, balls, holes, walls, first = True, stop = False):
-        while not stop:                 
-            for event in pygame.event.get():                               
-                if pygame.mouse.get_pressed()[0]:   
-                    self.render(event.pos, balls, holes, walls)                 
-                    self.x = event.pos[0]
-                    self.y = event.pos[1]
-                    if first:
-                        self.vel_x = 0
-                        self.vel_y = 0
-                        first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
-                    else:
-                        self.vel_x = (self.x - stickPrev[0]) / 8 #we can play with this 10
-                        self.vel_y = (self.y - stickPrev[1]) / 8
+    def move(self, balls, holes, walls, first = True):
+        a = 0
+        pos = []
+        while True:  
+            while not a: #waits for the first position
+                for event in pygame.event.get():                              
+                    if pygame.mouse.get_pressed()[0]:
+                        pos = event.pos
+                        a = 1
+                        break 
+            a, pos = self.render(pos, balls, holes, walls)
+            while not a: #if it got off the function without still pressing the button, it waits for a new press
+                for event in pygame.event.get():                               
+                    if pygame.mouse.get_pressed()[0]:
+                        pos = event.pos
+                        a = 1
+                        break         
+            self.x = pos[0]
+            self.y = pos[1]
+            if first:
+                self.vel_x = 0
+                self.vel_y = 0
+                first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
+            else:
+                self.vel_x = (self.x - stickPrev[0]) / 8 #we can play with this 10
+                self.vel_y = (self.y - stickPrev[1]) / 8
 
-                    stickPrev = event.pos
+            stickPrev = pos
 
-                    if stick.CheckCollision(balls[0]):
-                        stop = True
-                        break
+            if stick.CheckCollision(balls[0]):
+                break
+                
     
     @property
     def Velocity(self):
