@@ -33,6 +33,8 @@ class Border():
         self.h = h
         self.color = color
 
+        print(x, y)
+
     def Render(self):
         """ Renders the border """
 
@@ -48,18 +50,62 @@ class Border():
             else:
                 dist = self.y - ball.y
 
-            if dist < ball.radius:
+            if dist <= ball.radius:
                 ball.vel_y *= -0.95 #loss of energy
 
         # aligned horizontally
-        if ball.y >= self.y and ball.y <= self.y + self.h:
+        elif ball.y >= self.y and ball.y <= self.y + self.h:
             if ball.x > self.x:
                 dist = ball.x - self.x - self.w
             else:
                 dist = self.x - ball.x
 
-            if dist < ball.radius:
+            if dist <= ball.radius:
                 ball.vel_x *= -0.95 #loss of energy
+
+        # coming from a diagonal
+        else:
+            # discover wich corner the ball is aproaching
+            if ball.x < self.x: corner_x = self.x
+            elif ball.x < self.x + self.w: corner_x = self.x + self.w
+            else: return
+
+            if ball.y < self.y: corner_y = self.y
+            elif ball.y < self.y + self.h: corner_y = self.y + self.h
+            else: return
+
+            # get normal vector and get distance
+            normal_x = ball.x - corner_x
+            normal_y = ball.y - corner_y
+            dist = MagnitudeVector(normal_x, normal_y)
+            normal_x /= dist
+            normal_y /= dist
+
+            if dist <= ball.radius:
+                print(ball.vel_x, ball.vel_y, MagnitudeVector(ball.vel_x, ball.vel_y))
+
+                # rotate axis
+                vel_x = normal_y * ball.vel_x + normal_x * ball.vel_y
+                vel_y = -normal_x * ball.vel_x + normal_y * ball.vel_y
+
+                print(vel_x, vel_y, MagnitudeVector(vel_x, vel_y))
+
+                # invert y
+                vel_y *= -1
+
+                print(vel_x, vel_y, MagnitudeVector(vel_x, vel_y))
+
+                # de-rotate axis
+                ball.vel_x = normal_y * vel_x - normal_x * vel_y
+                ball.vel_y = normal_x * vel_x + normal_y * vel_y
+                
+                print(ball.vel_x, ball.vel_y, MagnitudeVector(ball.vel_x, ball.vel_y))
+
+                # makes balls (and all my problems) go away
+                while MagnitudeVector(ball.x - corner_x, ball.y - corner_y) <= ball.radius:
+                    ball.Move()
+
+
 
 class taco():
     def __init__(self, x, y, radius):
@@ -294,21 +340,40 @@ image = pygame.image.load("taco.png").convert()
 pygame.display.flip()
 pygame.time.delay(1500) """
 
-walls = [Border(0, 0, width, 10, BLACK), Border(0, 0, 10, height, BLACK), Border(width - 10, 0, 10, height, BLACK), Border(0, height -10, width, 10, BLACK)]
-holes = [Hole(0, 0, 100, BLACK)]
+ball_radius = 50
+hole_radius = 60
+border_size = 60
+
+walls = [
+    # Border(2 * hole_radius, 0, width / 2 - 3 * hole_radius, border_size, WHITE), 
+    # Border(hole_radius + width / 2, 0, width / 2 - 3 * hole_radius, border_size, WHITE), 
+    # Border(0, 2 * hole_radius, border_size, height - 4 * hole_radius, WHITE),
+    # Border(2 * hole_radius, height - border_size, width / 2 - 3 * hole_radius, border_size, WHITE), 
+    Border(hole_radius + width / 2, height - border_size, width / 2 - 3 * hole_radius, border_size, WHITE), 
+    # Border(width - border_size, 2 * hole_radius, border_size, height - 4 * hole_radius, WHITE),
+    ]
+holes = [
+    # Hole(0, 0, hole_radius, BLACK), 
+    # Hole(width, height, hole_radius, BLACK), 
+    # Hole(0, height, hole_radius, BLACK), 
+    # Hole(width, 0, hole_radius, BLACK), 
+    # Hole(width/2, 0, hole_radius, BLACK), 
+    # Hole(width/2, height, hole_radius, BLACK)
+    ]
+
 balls = []
 balls_in_hole = []
 
 
-balls.append(Ball(100, 200, 50, WHITE))
+balls.append(Ball(500, 500, 50, WHITE))
 balls[0].vel_x = 0
 balls[0].vel_y = 0
 # for i in range(0, int(input("Numero de bolas: "))):
-for i in range(1, 9):
-    balls.append(Ball(100 + 110 * i, 200, 50, (randint(0,255), randint(0,255), randint(0,255))))
+# for i in range(1, 9):
+#     balls.append(Ball(100 + 110 * i, 200, 50, (randint(0,255), randint(0,255), randint(0,255))))
 
-    balls[i].vel_x = 0#randint(-10, 10)
-    balls[i].vel_y = 0#randint(-10, 10)
+#     balls[i].vel_x = 0#randint(-10, 10)
+#     balls[i].vel_y = 0#randint(-10, 10)
 
 
 # balls = [Ball(500, 500, 50, (255, 255, 255))]
