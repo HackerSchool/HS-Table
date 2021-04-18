@@ -115,15 +115,8 @@ class taco():
         self.original = pygame.image.load("taco.png").convert_alpha()
         self.angle = AngleVector(self.vel_x, self.vel_y)
         self.image = pygame.transform.rotate(self.original, self.angle)
-           
 
-    def render(self, pos, holes, balls, walls):
-        self.angle =  AngleVector(-self.vel_x, self.vel_y) * 180 / pi + 33
-        self.image = pygame.transform.rotate(self.original, self.angle)
-        #print(self.angle)
-        screen.blit(self.image, (pos[0] - 300, pos[1]- 300))
-        pygame.display.flip()
-        pygame.time.delay(30) 
+    def erase(self, holes, balls, walls):
         screen.fill(DARK_GREEN)
     
         for hole in holes:
@@ -135,19 +128,35 @@ class taco():
         for wall in walls:
             wall.Render()
 
-         
+
+    def render(self, pos, holes, balls, walls, anglePrev):
+        self.angle =  AngleVector(-self.vel_x, self.vel_y) * 180 / pi + 33 
+
+
+        self.image = pygame.transform.rotate(self.original, self.angle)
+        screen.blit(self.image, (pos[0] - 300, pos[1]- 300))
+        pygame.display.flip() 
+        pygame.time.delay(20)
+        self.erase(holes, balls, walls)
+
+
         while True:
             for event in pygame.event.get(): #just when taco moves again it gets erased
                 pygame.display.flip()
                 if not pygame.mouse.get_pressed()[0]:
-                    return 0, []
+                    return 0, [], self.angle
                 else:
-                    return 1, event.pos #it moved but button is still pressed..
+                    return 1, event.pos, self.angle #it moved but button is still pressed..
+        
 
     
     def move(self, balls, holes, walls, first = True):
         a = 0
         pos = []
+        anglePrev = 0
+        vel_xPrev = []
+        vel_yPrev = []
+        stickPrev = [0,0]
         while True:  
             while not a: #waits for the first position
                 for event in pygame.event.get():                              
@@ -155,7 +164,7 @@ class taco():
                         pos = event.pos
                         a = 1
                         break 
-            a, pos = self.render(pos, balls, holes, walls)
+            a, pos, anglePrev = self.render(pos, balls, holes, walls, anglePrev)
             while not a: #if it got off the function without still pressing the button, it waits for a new press
                 for event in pygame.event.get():                               
                     if pygame.mouse.get_pressed()[0]:
@@ -164,15 +173,22 @@ class taco():
                         break         
             self.x = pos[0]
             self.y = pos[1]
-            if first:
+            """ if first:
                 self.vel_x = 0
                 self.vel_y = 0
-                first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
-            else:
-                self.vel_x = (self.x - stickPrev[0]) / 8 #we can play with this 10
-                self.vel_y = (self.y - stickPrev[1]) / 8
+                first = False """ #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
+            #else:
+            vel_x = (self.x - stickPrev[0]) / 5
+            vel_y = (self.y - stickPrev[1]) / 5
 
             stickPrev = pos
+            vel_xPrev.append(vel_x) 
+            vel_yPrev.append(vel_y)
+            if (len(vel_xPrev) > 8):
+                vel_xPrev.pop(0)
+                vel_yPrev.pop(0)
+            self.vel_x = sum(vel_xPrev) / len(vel_xPrev)
+            self.vel_y = sum(vel_yPrev) / len(vel_yPrev)
 
             if stick.CheckCollision(balls[0]):
                 break
@@ -188,7 +204,7 @@ class taco():
         dist_x = ball.x - self.x
         dist_y = ball.y - self.y
 
-        # see if collided
+        # see if collided WHYYYYY
         dist = sqrt(dist_x ** 2 + dist_y ** 2)
 
         if dist <= ball.radius: 
