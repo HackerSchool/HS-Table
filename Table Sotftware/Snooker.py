@@ -164,22 +164,34 @@ class taco():
                         pos = event.pos
                         a = 1
                         break 
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        running = False 
             a, pos, anglePrev = self.render(pos, balls, holes, walls, anglePrev)
-            while not a: #if it got off the function without still pressing the button, it waits for a new press
+            if not a:
+                first = True
+                vel_xPrev = []
+                vel_yPrev = []
+            while not a: 
                 for event in pygame.event.get():                               
                     if pygame.mouse.get_pressed()[0]:
                         pos = event.pos
                         a = 1
-                        break         
+                        break 
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        running = False        
             self.x = pos[0]
             self.y = pos[1]
-            """ if first:
+            if first:
                 self.vel_x = 0
                 self.vel_y = 0
-                first = False """ #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
-            #else:
-            vel_x = (self.x - stickPrev[0]) / 5
-            vel_y = (self.y - stickPrev[1]) / 5
+                vel_x = 0
+                vel_y = 0
+                first = False #still doesnt work.. its supposed to not allow huge velocities when you stop pressing and then press again very far away
+            else:
+                vel_x = (self.x - stickPrev[0]) / 2
+                vel_y = (self.y - stickPrev[1]) / 2
 
             stickPrev = pos
             vel_xPrev.append(vel_x) 
@@ -358,7 +370,7 @@ TABLE_WIDTH = int(SCREEN_WIDTH)
 TABLE_HEIGHT = int(TABLE_WIDTH // 2)
 BORDER_SIZE = 2 * BALL_RADIUS
 
-print(2 * HOLE_RADIUS, TABLE_HEIGHT - BORDER_SIZE, TABLE_WIDTH / 2 - 3 * HOLE_RADIUS, BORDER_SIZE, WHITE)
+#print(2 * HOLE_RADIUS, TABLE_HEIGHT - BORDER_SIZE, TABLE_WIDTH / 2 - 3 * HOLE_RADIUS, BORDER_SIZE, WHITE)
 
 walls = [
     Border(2 * HOLE_RADIUS, 0, TABLE_WIDTH / 2 - 3 * HOLE_RADIUS, BORDER_SIZE, WHITE), 
@@ -392,6 +404,7 @@ pygame.display.flip()
 running = True
 
 stick = taco(0,0,10)
+flag = 0
 
 while running:
     pygame.time.delay(10)
@@ -429,6 +442,7 @@ while running:
     balls_to_remove.sort(reverse=True)
 
     for i in balls_to_remove:
+        flag = 1
         ball = balls.pop(i)
 
         balls_in_hole.append(ball)
@@ -437,14 +451,15 @@ while running:
 
     for i in range(0, len(balls_in_hole)):
         ball.radius -= 1
-        if ball.radius <= 0:
+        if ball.radius < 0:
+            flag = 0
             balls_to_remove.append(i)
 
     balls_to_remove.sort(reverse=True)
     for i in balls_to_remove:
         balls_in_hole.pop(i)
 
-    if (stoped(balls)): #time for a move!
+    if (stoped(balls) and not flag): #time for a move!
         stick.move(balls, holes, walls)
         
 
