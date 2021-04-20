@@ -3,18 +3,15 @@ import pygame
 pygame.init()
 
 from subprocess import call
-#import tic_tac_toe_main_menu
+from tic_tac_toe_main_menu import *
 from assets.Color import *
 from assets.Dimensions import *
 from assets.Fonts import *
+from assets.env_buttons_and_text import *
+from assets.fade import *
 
-FPS = 60
-
-#DEFINING SCREEN, BUTTONS, TEXT AND LAYOUTS
-#Create screen
-os.environ['SDL_VIDEO_CENTERED'] = '1' #Centers the window screen
-
-Fullscreen = False
+#Defining screen
+Fullscreen = True
 if Fullscreen == True:
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT), pygame.FULLSCREEN)
 else:
@@ -26,101 +23,6 @@ def display_background():
     BACKGROUND_IMAGE = pygame.image.load("./assets/images/Logo_HS_Table 1.png")
     BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (SCREEN_WIDTH, SCREEN_HEIGHT))
     SCREEN.blit(BACKGROUND_IMAGE, [0,0])  
-
-#Create buttons (according to screen size)
-APP_BUTTON_WIDTH = int(170)
-APP_BUTTON_HEIGHT = int(170)
-
-SETTINGS_BUTTON_WIDTH = int(SCREEN_WIDTH * 0.8 // 3)
-SETTINGS_BUTTON_HEIGHT = int(SCREEN_HEIGHT * 5 // 55)
-
-SMALL_BUTTON_WIDTH = int(80)
-SMALL_BUTTON_HEIGHT = int(80)
-
-QUESTION_BUTTON_WIDTH = int(SCREEN_WIDTH * 0.8 // 3)
-QUESTION_BUTTON_HEIGHT = int(SCREEN_HEIGHT * 5 // 55)
-
-MAIN_BUTTONS_LAYOUT = [((SCREEN_WIDTH - SMALL_BUTTON_WIDTH) // 1.0005, SCREEN_HEIGHT * 10.9 // 12, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT),
-                       ((SCREEN_WIDTH - APP_BUTTON_WIDTH) // 10, SCREEN_HEIGHT * 1 // 12, APP_BUTTON_WIDTH, APP_BUTTON_HEIGHT),
-                       ((SCREEN_WIDTH - APP_BUTTON_WIDTH) // 3, SCREEN_HEIGHT * 1 // 12, APP_BUTTON_WIDTH, APP_BUTTON_HEIGHT)]
-
-SETTINGS_BUTTONS_LAYOUT = [((SCREEN_WIDTH - SETTINGS_BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 5 // 12, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT),
-                           ((SCREEN_WIDTH - SETTINGS_BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT),
-                           ((SCREEN_WIDTH - SETTINGS_BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT),
-                           ((SCREEN_WIDTH - SETTINGS_BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 10 // 12, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT)]
-
-QUESTION_BUTTONS_LAYOUT = [((SCREEN_WIDTH - QUESTION_BUTTON_WIDTH) // 4.5, SCREEN_HEIGHT * 5 // 12, QUESTION_BUTTON_WIDTH, QUESTION_BUTTON_HEIGHT),
-                           ((SCREEN_WIDTH - QUESTION_BUTTON_WIDTH) // 1.3, SCREEN_HEIGHT * 5 // 12, QUESTION_BUTTON_WIDTH, QUESTION_BUTTON_HEIGHT)]
-
-#Create texts
-MAIN_MENU_TEXT = pygame.font.Font(FONT_ORIGAMI, int(115 / 1080 * SCREEN_HEIGHT))
-LARGE_MIDDLE_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(115 / 1080 * SCREEN_HEIGHT))
-LARGE_TEXT = pygame.font.Font(FONT_RAJDHANI, int(60 / 1440 * SCREEN_HEIGHT))
-MEDIUM_TEXT = pygame.font.Font(FONT_RAJDHANI, int(45 / 1440 * SCREEN_HEIGHT))
-MEDIUM_BOLD_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(45 / 1440 * SCREEN_HEIGHT))
-SMALL_TEXT = pygame.font.Font(FONT_RAJDHANI, int(35 / 1440 * SCREEN_HEIGHT))
-SMALL_BOLD_TEXT = pygame.font.Font(FONT_RAJDHANI_BOLD, int(35 / 1440 * SCREEN_HEIGHT))
-LABEL_TEXT = pygame.font.Font(FONT_RAJDHANI, int(85 / 1440 * SCREEN_HEIGHT))
-HS_TEXT = pygame.font.Font(FONT_ORIGAMI, int(100 / 1440 * SCREEN_HEIGHT))
-
-#BUTTONS AND TEXTS FUNCTIONS
-#Define rendered text of button (returns rendered text and it's image dimensions)
-def text_objects(text, font, colour):
-    text_surface = font.render(text, True, colour) #antialias = True
-    text_area = text_surface.get_rect()
-
-    return text_surface, text_area
-
-#Define button style
-def button(text, x, y, w, h, click, inactive_button = LIGHT_GREEN, active_button = DARK_GREEN, text_colour = BLACK):
-    mouse = pygame.mouse.get_pos() #Store mouse coordinates into the variable
-    button_clicked = False
-
-    #If button is clicked, button_clicked turns true and button changes to darker colour
-    if x < mouse[0] < x + w and y < mouse[1] < y + h and click and pygame.time.get_ticks() > 100:
-        if text == 'H':
-            pygame.draw.rect(SCREEN, active_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, HS_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 2))
-            SCREEN.blit(text_surf, text_rectangle)
-            button_clicked = True
-
-        elif text == 'TIC-TAC-TOE' or text == 'POLL GAME': #SELFNOTE: ADD REST OF GAMES HERE ONCE THEY'RE DONE
-            pygame.draw.rect(SCREEN, active_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, SMALL_BOLD_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 1.2))
-            SCREEN.blit(text_surf, text_rectangle)
-            button_clicked = True
-
-        else:
-            pygame.draw.rect(SCREEN, active_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, MEDIUM_BOLD_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 2))
-            SCREEN.blit(text_surf, text_rectangle)
-            button_clicked = True
-
-    else:
-        if text == 'H':
-            pygame.draw.rect(SCREEN, inactive_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, HS_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 2))
-            SCREEN.blit(text_surf, text_rectangle)
-
-        elif text == 'TIC-TAC-TOE' or text == 'POLL GAME': #SELFNOTE: ADD REST OF GAMES HERE ONCE THEY'RE DONE
-            pygame.draw.rect(SCREEN, inactive_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, SMALL_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 1.2))
-            SCREEN.blit(text_surf, text_rectangle)
-
-        else:
-            pygame.draw.rect(SCREEN, inactive_button, (x, y, w, h))
-            text_surf, text_rectangle = text_objects(text, MEDIUM_TEXT, text_colour)
-            text_rectangle.center = (int(x + w / 2), int(y + h / 2))
-            SCREEN.blit(text_surf, text_rectangle)
-
-
-    pygame.display.update()
-    return button_clicked
 
 #TURN OFF PC MENU
 def turnoff_system_menu(turnoff_system):
@@ -146,44 +48,41 @@ def turnoff_system_menu(turnoff_system):
         if turnoff_system == 'Shutdown':
             setup_turnoff_system_menu(turnoff_system)
 
-            if button('Y E S', *QUESTION_BUTTONS_LAYOUT[0], click): #Desativei botão para não haver desligos acidentais de pc's
+            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
                 pygame.time.delay(100)
-                #os.system('shutdown /s /t 0') #Windows
                 #call("sudo shutdown -h now", shell = True) #Raspberry pi
 
-            elif button('N O', *QUESTION_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
                 pygame.time.delay(100)
-                main_environment()
+                main_env()
 
         elif turnoff_system == 'Restart':
             setup_turnoff_system_menu(turnoff_system)
 
-            if button('Y E S', *QUESTION_BUTTONS_LAYOUT[0], click): #Desativei botão para não haver desligos acidentais de pc's
+            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
                 pygame.time.delay(100)
-                #os.system("shutdown /r /t 0") #Windows
                 #call("sudo shutdown -r now", shell=True) #Raspberry pi
 
-            elif button('N O', *QUESTION_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
                 pygame.time.delay(100)
-                main_environment()
+                main_env()
 
         elif turnoff_system == 'Hibernate':
             setup_turnoff_system_menu(turnoff_system)
 
-            if button('Y E S', *QUESTION_BUTTONS_LAYOUT[0], click): #Desativei botão para não haver desligos acidentais de pc's
+            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
                 pygame.time.delay(100)
-                #os.system("shutdown /h /t 0") #Windows
-                #Couldn't find any hibernate command for raspberry pi
+                #Não encontrei comando de hibernar para o raspberry pi
 
-            elif button('N O', *QUESTION_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
                 pygame.time.delay(100)
-                main_environment()
+                main_env()
 
-        pygame.display.update(QUESTION_BUTTONS_LAYOUT)
+        pygame.display.update(QUESTION_ENV_BUTTONS_LAYOUT)
 
 
-#SETTINGS MENU  
-def settings_menu():
+#SETTINGS MENU
+def env_settings_menu():
     display_background()
 
     settingsmenu = True
@@ -197,33 +96,31 @@ def settings_menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
-        if button('H', *MAIN_BUTTONS_LAYOUT[0], click):
+        if env_button(SCREEN, 'H', *MAIN_ENV_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
-            main_environment()
+            main_env()
 
-        if button('S H U T D O W N', *SETTINGS_BUTTONS_LAYOUT[0], click):
+        if env_button(SCREEN, 'S H U T D O W N', *SETTINGS_ENV_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             turnoff_system_menu('Shutdown')
 
-        elif button('R E S T A R T', *SETTINGS_BUTTONS_LAYOUT[1], click):
+        elif env_button(SCREEN, 'R E S T A R T', *SETTINGS_ENV_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
             turnoff_system_menu('Restart')
 
-        elif button('H I B E R N A T E', *SETTINGS_BUTTONS_LAYOUT[2], click):
+        elif env_button(SCREEN, 'H I B E R N A T E', *SETTINGS_ENV_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
             turnoff_system_menu('Hibernate')
 
-        pygame.display.update(MAIN_BUTTONS_LAYOUT)
-
+        pygame.display.update(MAIN_ENV_BUTTONS_LAYOUT)
 
 #MAIN ENVIRONMENT
-def main_environment():
+def main_env():
     display_background()
 
     envmenu = True
     while envmenu:
         click = False
-        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -231,19 +128,20 @@ def main_environment():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
-        if button('H', *MAIN_BUTTONS_LAYOUT[0], click):
+        if env_button(SCREEN, 'H', *MAIN_ENV_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
-            settings_menu()
+            env_settings_menu()
 
-        elif button('TIC-TAC-TOE', *MAIN_BUTTONS_LAYOUT[1], click):
+        elif env_button(SCREEN, 'TIC TAC TOE', *MAIN_ENV_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            #tictactoe_mainmenu
+            fadeout_screen(SCREEN)
+            galo_main_menu()
 
-        elif button('POLL GAME', *MAIN_BUTTONS_LAYOUT[2], click):
-            pygame.time.delay(100)
-            #pollgame_mainmenu
+        elif env_button(SCREEN, 'SNOOKER', *MAIN_ENV_BUTTONS_LAYOUT[2], click):
+            pygame.time.delay(1000)
+            #snooker_main_menu()
 
-        pygame.display.update(MAIN_BUTTONS_LAYOUT)
+    pygame.display.update(MAIN_ENV_BUTTONS_LAYOUT)
 
-clock = pygame.time.Clock()
-main_environment()
+#fadein_screen(SCREEN, main_env) #Ainda não funciona
+main_env()
