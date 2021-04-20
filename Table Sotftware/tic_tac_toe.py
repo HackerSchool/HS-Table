@@ -19,7 +19,7 @@ s.fill((20,20,20))
 
 
 
-def makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r):
+def makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,PLAYERS,wins):
     """ Inicializa o screen com a grade de jogo e as rondas"""
     
     screen = pygame.display.set_mode((LARGURA,ALTURA))
@@ -40,24 +40,40 @@ def makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r):
         textrRect.center = ((LARGURA-(LARGURA//10)),(ALTURA//20))
         screen.blit(text_r,textrRect)
     
+    for p in range (PLAYERS):
+        texto = "PLAYER " + str(p+1) + ": " + str(wins[p])
+        texto_r = SMALL_TEXT_ONE.render(str(texto),True, WHITE)
+        texto_rect = texto_r.get_rect()
+        if p == 0:
+            texto_rect.center = ((LARGURA//13),(ALTURA//4))
+        else:
+            texto_rect.center = ((LARGURA//13),(ALTURA//4 + (p*40)))
+        screen.blit (texto_r,texto_rect)
+        
+    
     return screen
 
 def convert(BOARDSIZE,dist,pos,xo,yo):
     """Converte as coordenadas do "rato" para uma posição (coluna,linha) no jogo"""
     x = xo
     y = yo
-                 
-    for c in range (BOARDSIZE): # percorrer todas as colunas
-        if (pos[0] < x) or (c==BOARDSIZE-1): 
-            for l in range(BOARDSIZE):
-                if pos[1] < y:
-                    break
-                else:
-                    y = y + dist # incrementar y para a próxima linha
-            break     
-        else:
-            x = x + dist # incrementar x para a próxima coluna
+    
+    if (pos[0] > x - dist - (ALTURA//25)) and (pos[0] < x + dist*(BOARDSIZE-1) + (ALTURA//25)): #se clicarem dentro do tabuleiro
+        for c in range (BOARDSIZE): # percorrer todas as colunas
+            if (pos[0] < x) or (c==BOARDSIZE-1): 
+                for l in range(BOARDSIZE):
+                    if pos[1] < y:
+                        break
+                    else:
+                        y = y + dist # incrementar y para a próxima linha
+                break     
+            else:
+                x = x + dist # incrementar x para a próxima coluna
             
+    else:
+        c = -3
+        l = -3
+                 
     if (pos[0] < ((LARGURA//19)+10)) and (pos[0] > ((LARGURA//30)-10)): #se clicarem na pausa
         if (pos[1] < (ALTURA//10)) and (pos[1] > (ALTURA//25)):
             c = -2
@@ -101,6 +117,9 @@ def Play(Board,dist,xo,yo,w,player, c,l):
     
     # tried to play on not empty spot
     if Board[c][l] != -1:
+        return False
+    
+    elif (c == -3) and (l == -3): 
         return False
 
     else:
@@ -484,7 +503,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             Board.append([-1 for i in range(BOARDSIZE)])
             
         player = r % NPLAYERS
-        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
+        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,NPLAYERS,winner) #cria a janela de jogo
         
         while not sair:
             pygame.display.update()
@@ -499,7 +518,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
                 option = pause(w,s)
                 if option == 1:         #resume
                     pygame.time.delay(100)
-                    w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                    w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r,NPLAYERS,winner)
                     for l in range (BOARDSIZE):
                         for c in range (BOARDSIZE):
                             if (Board[c][l] != -1):
@@ -558,7 +577,7 @@ def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
             Board.append([-1 for i in range(BOARDSIZE)])
             
         player = r % NPLAYERS
-        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r) #cria a janela de jogo
+        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,NPLAYERS,winner) #cria a janela de jogo
         
         while not sair:
             pygame.display.update()    
@@ -605,7 +624,7 @@ def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
                     option = pause(w,s)
                     if option == 1:
                         pygame.time.delay(100)
-                        w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r)
+                        w = makescreen(BOARDSIZE, dist, xo, yo, RONDAS, r,NPLAYERS,winner)
                         for l in range (BOARDSIZE):
                             for c in range (BOARDSIZE):
                                 if (Board[c][l] != -1):
