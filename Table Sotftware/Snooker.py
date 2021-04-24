@@ -65,7 +65,6 @@ class Border():
             # makes balls (and all my problems) go away
             while MagnitudeVector(ball.x - near_x, ball.y - near_y) <= ball.radius:
                 ball.Move()
-
                 near_x, near_y = self.GetNearestPoint(ball)
 
     def GetNearestPoint(self, ball):
@@ -136,7 +135,7 @@ class taco():
         self.image = pygame.transform.rotate(self.original, self.angle)
         screen.blit(self.image, (pos[0] - self.image.get_width() // 2, pos[1] - self.image.get_height() // 2))
         pygame.display.flip() 
-        pygame.time.delay(20)
+        pygame.time.delay(15)
         self.erase(holes, balls, walls)
 
 
@@ -166,7 +165,7 @@ class taco():
                         break 
                     if event.type == pygame.QUIT:
                         pygame.quit()
-                        running = False 
+                        running = False
             a, pos, anglePrev = self.render(pos, balls, holes, walls, anglePrev)
             if not a:
                 first = True
@@ -237,11 +236,11 @@ class taco():
         return 0
 
 class Ball():
-    def __init__(self, x, y, radius, color):
+    def __init__(self, x, y, radius, color, velx = 0, vely = 0):
         self.x = x
         self.y = y
-        self.vel_x = 0
-        self.vel_y = 0
+        self.vel_x = velx
+        self.vel_y = vely
         self.radius = radius
         self.color = color
     
@@ -257,7 +256,7 @@ class Ball():
         self.y += self.vel_y
 
         # atrito
-        self.ChangeVelMagnitude(self.Velocity*0.999)
+        self.ChangeVelMagnitude(self.Velocity*0.997)
 
         #print(self.Velocity, self.x)
 
@@ -350,11 +349,96 @@ class Hole():
         
         return False
 
+class Player():
+    def __init__(self, color = -1, balls = 0):
+        self.color = color
+        self.balls = balls
+
 def stoped(balls):
     for b in balls:
-        if b.vel_x != 0 and b.vel_y != 0:
+        if b.vel_x != 0 or b.vel_y != 0:
             return 0
     return 1
+
+def bolaBranca(balls):
+    a = 0
+    b = 1
+    if len(balls) == 16:
+        return 0
+    if balls[0].color != WHITE: #white fell in hole
+        while not a: #waits for the first position
+            for event in pygame.event.get():                              
+                if pygame.mouse.get_pressed()[0]:
+                    pos = event.pos
+                    balls.insert(0, Ball(pos[0], pos[1], BALL_RADIUS, WHITE))
+                    a = 1
+                    break 
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    running = False
+            
+            if a: #choosing final position
+                while b:
+                    for event in pygame.event.get():                              
+                        if pygame.mouse.get_pressed()[0]:
+                            pos = event.pos
+                            balls[0].x = pos[0]
+                            balls[0].y = pos[1]
+                            balls[0].Render()
+                            pygame.display.flip()
+                            pygame.time.delay(15)
+                            screen.fill(DARK_GREEN)    
+                            for hole in holes:
+                                hole.Render()
+
+                            for b in balls:
+                                if b == balls[0]:
+                                    continue
+                                b.Render()
+
+                            for wall in walls:
+                                wall.Render()
+                        else:
+                            b = 0
+                            break        
+        balls[0].Render()
+        pygame.display.flip()
+        return 1
+    return 0
+
+
+def gotIn(balls, prev = 16):
+    if len(balls) < prev:
+        prev = len(balls)
+        return 1, prev
+    return 0, prev
+
+def defColor(players, player, balls):
+    countB = 0
+    countR = 0
+    for b in balls:
+        if b.color == (0,0,200):
+            countB += 1
+        if b.color == (200,0,0):
+            countR += 1
+    
+    #BLUE ------------> 1!
+    if countB > countR:
+        players[player].color = 0
+        players[(player + 1) % 2].color = 1
+        players[player].balls = 7 - countR
+        players[(player + 1) % 2].balls = 7 - countB
+    elif countR > countB:
+        players[player].color = 1
+        players[(player + 1) % 2].color = 0
+        players[player].balls = 7 - countB
+        players[(player + 1) % 2].balls = 7 - countR
+    else:
+        players[player].color = -1
+        players[(player + 1) % 2].color = -1
+        players[player].balls = 7 - countB
+        players[(player + 1) % 2].balls = 7 - countR
+
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Snooker')
@@ -391,22 +475,22 @@ holes = [
     ]
 
 balls = [
-    Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
-    Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (randint(0, 255), randint(0, 255), randint(0, 255))),
+    Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 15),#5
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (10,10,10)),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
+    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
+    Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (200,0,0)),
 ]
 
 balls_in_hole = []
@@ -417,6 +501,10 @@ running = True
 
 stick = taco(0,0,10)
 flag = 0
+
+players = [Player(), Player()]
+player = 0
+prev = 16
 
 while running:
     pygame.time.delay(10)
@@ -454,6 +542,16 @@ while running:
     balls_to_remove.sort(reverse=True)
 
     for i in balls_to_remove:
+        if players[player].color != -1:
+            if balls[i].color == (0,0,200) and players[player].color == 1:
+                players[player].balls += 1
+            elif balls[i].color == (200,0,0) and players[player].color == 0:
+                players[player].balls += 1
+            elif balls[i].color == (0,0,200) and players[player].color == 0:
+                players[(player + 1) % 2].balls += 1
+            elif balls[i].color == (200,0,0) and players[player].color == 1:
+                players[(player + 1) % 2].balls += 1
+
         flag = 1
         ball = balls.pop(i)
 
@@ -472,7 +570,29 @@ while running:
         balls_in_hole.pop(i)
 
     if (stoped(balls) and not flag): #time for a move!
+        if bolaBranca(balls): #bug nao esquecer caso em que ja entraram um numero par de bolas e nenhum jogador tem ainda cor e tira se uma delas e determina-se AQUI a cor de cada jogador
+            #remove a ball from current player
+            if players[player].balls != 0:
+                if players[player].color == 1:
+                    balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, (0,0,200)))
+                elif players[player].color == 0:
+                    balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, (200,0,0)))
+                players[player].balls -= 1
+                balls[len(balls) - 1].Render()
+                pygame.display.flip()           
+            
+        idk, prev = gotIn(balls, prev) #need to fiz bug that happens when current player puts the other players ball in (he shouldnt get another hit)
+        if idk and (players[0].color == -1):
+            #determine each players color     
+            defColor(players, player, balls)
+        if not idk: #no ball got in (changes players)
+            player += 1
+            if player == 2:
+                player = 0
+        #print(player + 1) #currently this player is moving
+        print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
         stick.move(balls, holes, walls)
+        
         
 
     for event in pygame.event.get():
