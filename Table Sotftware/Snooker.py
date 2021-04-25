@@ -353,6 +353,7 @@ class Player():
     def __init__(self, color = -1, balls = 0):
         self.color = color
         self.balls = balls
+        self.prevBalls = 0
 
 def stoped(balls):
     for b in balls:
@@ -370,7 +371,7 @@ def bolaBranca(balls):
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = event.pos
-                    balls.insert(0, Ball(pos[0], pos[1], BALL_RADIUS, WHITE))
+                    balls.insert(0, Ball(pos[0], pos[1], BALL_RADIUS, WHITE)) #maybe mudamos isto para ser balls.append() e depois balls[0] troca com balls[len(balls)] pq deve ser mais eficiente e em principio n faz diferenca
                     a = 1
                     break 
                 if event.type == pygame.QUIT:
@@ -399,27 +400,61 @@ def bolaBranca(balls):
                             for wall in walls:
                                 wall.Render()
                         else:
-                            b = 0
-                            break        
+                            flag = 0
+                            for b in balls:
+                                if b == balls[0]:
+                                    continue 
+                                dist_x = b.x - balls[0].x
+                                dist_y = b.y - balls[0].y
+
+                                # see if collided WHYYYYY
+                                dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+                                if dist <= 2 * b.radius: 
+                                    flag = 1
+                                    break
+                            if not flag:
+                                b = 0
+                                break
+                            else:
+                                pygame.display.flip()
+
         balls[0].Render()
         pygame.display.flip()
         return 1
     return 0
 
 
-def gotIn(balls, prev = 16):
-    if len(balls) < prev:
+def gotIn(balls, players, player, prev):
+    flag1, flag2 = 0, 0
+    if players[player].prevBalls < players[player].balls: #meteu uma(s) bola(s) sua
+        players[player].prevBalls = players[player].balls 
+        flag1 = 1
+    if players[(player + 1) % 2].prevBalls < players[(player + 1) % 2].balls: #meteu uma(s) bola(s) do seu adversario
+        players[(player + 1) % 2].prevBalls = players[(player + 1) % 2].balls
+        flag2 = 1
+
+    if not flag1 and not flag2:
+        if len(balls) < prev: #quando ainda n têm equipa ainda n conseguem atribuir bolas msm que estas entrem
+            prev = len(balls)
+            return 1, prev
+        else:
+            return 0, prev
+    elif flag1:
         prev = len(balls)
         return 1, prev
-    return 0, prev
+    else:
+        prev = len(balls)
+        return 0, prev
+    
 
 def defColor(players, player, balls):
     countB = 0
     countR = 0
     for b in balls:
-        if b.color == (0,0,200):
+        if b.color == BLUE:
             countB += 1
-        if b.color == (200,0,0):
+        if b.color == RED:
             countR += 1
     
     #BLUE ------------> 1!
@@ -428,17 +463,74 @@ def defColor(players, player, balls):
         players[(player + 1) % 2].color = 1
         players[player].balls = 7 - countR
         players[(player + 1) % 2].balls = 7 - countB
+        players[player].prevBalls = 7 - countR
+        players[(player + 1) % 2].prevBalls = 7 - countB
     elif countR > countB:
         players[player].color = 1
         players[(player + 1) % 2].color = 0
         players[player].balls = 7 - countB
         players[(player + 1) % 2].balls = 7 - countR
+        players[player].prevBalls = 7 - countB
+        players[(player + 1) % 2].prevBalls = 7 - countR
     else:
         players[player].color = -1
         players[(player + 1) % 2].color = -1
         players[player].balls = 7 - countB
         players[(player + 1) % 2].balls = 7 - countR
+        players[player].prevBalls = 7 - countB
+        players[(player + 1) % 2].prevBalls = 7 - countR
 
+def aux(players, player, balls): #bug ainda pode correr mal se estiver a linha toda quase toda ocupada..
+    flag = 1
+    while flag:
+        for b in balls:
+            if b == balls[len(balls) - 1]:
+                continue 
+            dist_x = b.x - balls[len(balls) - 1].x
+            dist_y = b.y - balls[len(balls) - 1].y
+
+            # see if collided WHYYYYY
+            dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+            if dist <= 2 * b.radius:
+                print("here")
+                while True:
+                    print("1")
+                    balls[len(balls) - 1].y += 10 
+                    dist_y = b.y - balls[len(balls) - 1].y
+
+                    # see if collided WHYYYYY
+                    dist = sqrt(dist_x ** 2 + dist_y ** 2)
+
+                    if dist > 2 * b.radius:
+                        break
+                print("hereee")
+                flag = 0
+                break
+        if not flag:
+            flag = 1
+        else:
+            flag = 0
+
+def removeBall(players, player, balls):
+    if players[player].balls != 0:
+        if players[player].color == 1:
+            balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE))
+            print(balls[len(balls) - 1].y)
+            aux(players, player, balls)
+            print(balls[len(balls) - 1].y)
+        elif players[player].color == 0:
+            balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, RED))
+            aux(players, player, balls)
+        else: #já havia bolas dentro de buracos mas ainda n havia cores definidas
+            balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE))
+            aux(players, player, balls)
+            players[player].color = 1
+            players[(player + 1) % 2].color = 0
+        players[player].balls -= 1
+        balls[len(balls) - 1].Render()
+        pygame.display.flip()
+    return
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Snooker')
@@ -475,22 +567,24 @@ holes = [
     ]
 
 balls = [
-    Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 15),#5
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (10,10,10)),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, (200,0,0)),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, (0,0,200)),
-    Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, (200,0,0)),
+    Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 15),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, LIGHT_BLACK),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
+    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+    Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, RED),
 ]
 
 balls_in_hole = []
@@ -505,6 +599,8 @@ flag = 0
 players = [Player(), Player()]
 player = 0
 prev = 16
+
+blackin = 0
 
 while running:
     pygame.time.delay(10)
@@ -543,14 +639,16 @@ while running:
 
     for i in balls_to_remove:
         if players[player].color != -1:
-            if balls[i].color == (0,0,200) and players[player].color == 1:
+            if balls[i].color == BLUE and players[player].color == 1:
                 players[player].balls += 1
-            elif balls[i].color == (200,0,0) and players[player].color == 0:
+            elif balls[i].color == RED and players[player].color == 0:
                 players[player].balls += 1
-            elif balls[i].color == (0,0,200) and players[player].color == 0:
+            elif balls[i].color == BLUE and players[player].color == 0:
                 players[(player + 1) % 2].balls += 1
-            elif balls[i].color == (200,0,0) and players[player].color == 1:
+            elif balls[i].color == RED and players[player].color == 1:
                 players[(player + 1) % 2].balls += 1
+        if balls[i].color == LIGHT_BLACK:
+            blackin = 1
 
         flag = 1
         ball = balls.pop(i)
@@ -570,20 +668,26 @@ while running:
         balls_in_hole.pop(i)
 
     if (stoped(balls) and not flag): #time for a move!
-        if bolaBranca(balls): #bug nao esquecer caso em que ja entraram um numero par de bolas e nenhum jogador tem ainda cor e tira se uma delas e determina-se AQUI a cor de cada jogador
-            #remove a ball from current player
-            if players[player].balls != 0:
-                if players[player].color == 1:
-                    balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, (0,0,200)))
-                elif players[player].color == 0:
-                    balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, (200,0,0)))
-                players[player].balls -= 1
-                balls[len(balls) - 1].Render()
-                pygame.display.flip()           
+
+        #if in the first move a player puts all the balls from his color and the black one (pretty much impossible) he will lose :/
+
+        if blackin and (players[player].balls < 7): #black gone before its time..
+            print("Player ", (player + 1) % 2 + 1, "Wins!")
+            break
+
+        if blackin and (players[player].balls == 7):
+            if balls[0].color != White: #meteu a preta e a branca...
+                print("Player ", (player + 1) % 2 + 1, "Wins!")
+                break
+            else: #meteu a preta e ganhou!
+                print("Player ", player + 1, "Wins!")
+                break 
+
+        if bolaBranca(balls): #remove a ball from current player
+            removeBall(players, player, balls)           
             
-        idk, prev = gotIn(balls, prev) #need to fiz bug that happens when current player puts the other players ball in (he shouldnt get another hit)
-        if idk and (players[0].color == -1):
-            #determine each players color     
+        idk, prev = gotIn(balls, players, player, prev) 
+        if idk and (players[0].color == -1): #determine each players color     
             defColor(players, player, balls)
         if not idk: #no ball got in (changes players)
             player += 1
