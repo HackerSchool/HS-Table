@@ -1,7 +1,6 @@
 #NOTE: NA ALTURA DE TESTAR NA MESA: 
 # - COLOCAR FULLSCREEN = True (linha 26)
 # - DEFINIR LIMITE PARA NÚMERO DE BOARDSIZE
-# - ALTERAR PYGAME.QUIT() POR FORMA A PASSAR PARA O PROGRAMA DO MAIN_ENVIRONMENT QUANDO SE SAI DO JOGO
 
 import pygame
 pygame.init()
@@ -10,16 +9,17 @@ from assets.Color import *
 from tic_tac_toe import *
 from assets.buttons_and_text import *
 from assets.Dimensions import *
+from assets.fade import *
 
 #Defining screen
 FULLSCREEN = True
 if FULLSCREEN == True:
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 else:
-    #SCREEN_WIDTH, SCREEN_HEIGHT = int(0.75 * SCREEN_WIDTH), int(0.75 * SCREEN_HEIGHT)
+    SCREEN_WIDTH, SCREEN_HEIGHT = int(0.75 * SCREEN_WIDTH), int(0.75 * SCREEN_HEIGHT)
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-#Default variable values
+#Default variable names
 NPLAYERS = 2
 BOARDSIZE = 3
 NROUNDS = 3
@@ -89,9 +89,10 @@ def choose_galo_settings_menu(settings_type):
     settingsmenu = True
     while settingsmenu:
         click = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit() #Mudar isto quando main_environment estiver acabado
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
 
@@ -200,7 +201,8 @@ def choose_galo_settings_menu(settings_type):
             elif settings_type == 'number of bot players':
                 NBOTS = int(num_bots)
                 changes_done(settings_type, NBOTS)
-                return NBOTS
+                playgame = True
+                return NBOTS, playgame
 
         elif button(SCREEN,'R E T U R N', *CHOOSE_SET_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
@@ -217,9 +219,11 @@ def choose_galo_settings_menu(settings_type):
                 return
 
             elif settings_type == 'number of bot players':
-                galo_main_menu()
+                playgame = False
+                return NBOTS, playgame
 
-        pygame.display.update(CHOOSE_SET_BUTTONS_LAYOUT)
+        pygame.display.update()
+
 
 #SETTINGS MENU
 def setup_galo_settings_menu():
@@ -240,37 +244,44 @@ def galo_settings_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit() #Mudar isto quando main_environment estiver acabado
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
         if button(SCREEN,'N U M B E R  O F  P L A Y E R S', *SETTINGS_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             NPLAYERS = choose_galo_settings_menu('number of players')
+            settingsmenu = False
             galo_settings_menu()
+            return NPLAYERS
 
         elif button(SCREEN,'N U M B E R  O F  R O U N D S', *SETTINGS_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
             NROUNDS = choose_galo_settings_menu('number of rounds')
+            settingsmenu = False
             galo_settings_menu()
+            return NROUNDS
 
         elif button(SCREEN,'B O A R D  S I Z E', *SETTINGS_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
             BOARDSIZE = choose_galo_settings_menu('board size')
+            settingsmenu = False
             galo_settings_menu()
+            return BOARDSIZE
         
         elif button(SCREEN,'B O T  D I F F I C U L T Y', *SETTINGS_BUTTONS_LAYOUT[3], click):
             pygame.time.delay(100)
             BOT_DIFF = choose_galo_settings_menu('bot difficulty')
+            settingsmenu = False
             galo_settings_menu()
+            return BOT_DIFF
 
         elif button(SCREEN,'R E T U R N', *SETTINGS_BUTTONS_LAYOUT[4], click):
             pygame.time.delay(100)
-            galo_main_menu()
+            return
 
-        pygame.display.update(SETTINGS_BUTTONS_LAYOUT)
-        
-    return NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF
+        pygame.display.update()  
+
 
 #START GAME MENU
 def setup_galo_start_game():
@@ -284,42 +295,46 @@ def setup_galo_start_game():
 
 def galo_start_game():
     setup_galo_start_game()
-    
+
     startgame = True
     while startgame:
         click = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit() #Mudar isto quando main_environment estiver acabado
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
 
-        if button(SCREEN,'P L A Y  W I T H  H U M A N S', *START_GAME_BUTTONS_LAYOUT[0], click):
+        if button(SCREEN,'P L A Y E R S  V S  P L A Y E R S', *START_GAME_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             while True:
                 if (galo (NPLAYERS, BOARDSIZE, NROUNDS) != -1):
-                    break 
-            galo_main_menu()
+                    break
+            return
 
-        elif button(SCREEN,'P L A Y  W I T H  B O T S', *START_GAME_BUTTONS_LAYOUT[1], click):
+        elif button(SCREEN,'P L A Y E R S  V S  B O T S', *START_GAME_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
-            NBOTS = choose_galo_settings_menu('number of bot players')
-            while True:
-                if (galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF, NBOTS) != -1):
-                    break 
-            galo_main_menu()
+            NBOTS, playgame = choose_galo_settings_menu('number of bot players')
+            if playgame == False:
+                return 
+            else:
+                while True:
+                    if (galo_BOT (NPLAYERS, BOARDSIZE, NROUNDS, BOT_DIFF, NBOTS) != -1):
+                        break 
+            return
 
         elif button(SCREEN,'R E T U R N', *START_GAME_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
-            galo_main_menu()
+            return
+            
+        pygame.display.update()
 
-        pygame.display.update(START_GAME_BUTTONS_LAYOUT)
 
 #MAIN MENU
 def setup_galo_main_menu():
     SCREEN.fill(GREY)
-
+    
     text_surf, text_rectangle = text_objects('TIC-TAC-TOE', MAIN_MENU_TEXT, WHITE)
     text_rectangle.center = (int(SCREEN_WIDTH // 2), int(SCREEN_HEIGHT // 4))
     SCREEN.blit(text_surf, text_rectangle)
@@ -331,28 +346,46 @@ def setup_galo_main_menu():
 
 def galo_main_menu():
     setup_galo_main_menu()
+    quit_game = False
     
     mainmenu = True
     while mainmenu:
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit() #Mudar isto quando main_environment estiver acabado
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
         if button(SCREEN,'S T A R T  G A M E', *MAIN_MENU_BUTTONS_LAYOUT[0], click):
             pygame.time.delay(100)
             galo_start_game()
+            mainmenu = False
 
         elif button(SCREEN,'S E T T I N G S', *MAIN_MENU_BUTTONS_LAYOUT[1], click):
             pygame.time.delay(100)
             galo_settings_menu()
+            mainmenu = False
 
         elif button(SCREEN,'Q U I T   G A M E', *MAIN_MENU_BUTTONS_LAYOUT[2], click):
             pygame.time.delay(100)
-            pygame.quit() #Mudar isto quando main_environment estiver acabado
+            #Default variable names (cada vez que se inicia o jogo as variáveis terão sempre os valores default)
+            global NPLAYERS
+            global NROUNDS
+            global BOARDSIZE
+            global NBOTS
+            global BOT_DIFF
+            global difficulty
+            NPLAYERS = 2
+            BOARDSIZE = 3
+            NROUNDS = 3
+            BOT_DIFF = 0
+            NBOTS = 1
+            quit_game = True
+            fadeout_screen(SCREEN, 255)
+            return quit_game
 
-        pygame.display.update(MAIN_MENU_BUTTONS_LAYOUT)
+        pygame.display.update()
+
 
 pygame.display.set_caption('TIC-TAC-TOE')

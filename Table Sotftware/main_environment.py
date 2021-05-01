@@ -8,7 +8,9 @@ from assets.Color import *
 from assets.Dimensions import *
 from assets.Fonts import *
 from assets.env_buttons_and_text import *
+from assets.env_background import *
 from assets.fade import *
+from datetime import date
 
 #Defining screen
 Fullscreen = True
@@ -18,105 +20,116 @@ else:
     SCREEN_WIDTH, SCREEN_HEIGHT = int(0.75 * SCREEN_WIDTH), int(0.75 * SCREEN_HEIGHT)
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-#Load images
-def display_background():
-    BACKGROUND_IMAGE = pygame.image.load("./assets/images/Logo_HS_Table 1.png")
-    BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    SCREEN.blit(BACKGROUND_IMAGE, [0,0])  
-
 #TURN OFF PC MENU
 def turnoff_system_menu(turnoff_system):
-    
-    def setup_turnoff_system_menu(turnoff_system):
-        display_background()
 
+    def setup_turnoff_system_menu(turnoff_system):
+        
         text_surf, text_rectangle = text_objects('Are you sure you want to ' + str(turnoff_system) + ' the system?', LARGE_TEXT, WHITE)
         text_rectangle.center = ((SCREEN_WIDTH // 3.27), (SCREEN_HEIGHT // 5))
         SCREEN.blit(text_surf, text_rectangle)
 
+    display_background(SCREEN, False, True, 122)
     turnoffmenu = True
     while turnoffmenu:
         click = False
-        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
         if turnoff_system == 'Shutdown':
             setup_turnoff_system_menu(turnoff_system)
 
-            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
+            if env_button(SCREEN, False, 'Y E S', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
                 pygame.time.delay(100)
                 #call("sudo shutdown -h now", shell = True) #Raspberry pi
 
-            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
                 pygame.time.delay(100)
-                main_env()
+                main_env(False)
 
         elif turnoff_system == 'Restart':
             setup_turnoff_system_menu(turnoff_system)
 
-            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
+            if env_button(SCREEN, False, 'Y E S', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
                 pygame.time.delay(100)
-                #call("sudo shutdown -r now", shell=True) #Raspberry pi
+                #call("sudo shutdown -r now", shell = True) #Raspberry pi
 
-            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
                 pygame.time.delay(100)
-                main_env()
+                main_env(False)
 
         elif turnoff_system == 'Hibernate':
             setup_turnoff_system_menu(turnoff_system)
 
-            if env_button(SCREEN, 'Y E S', *QUESTION_ENV_BUTTONS_LAYOUT[0], click):
+            if env_button(SCREEN, False, 'Y E S', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
                 pygame.time.delay(100)
                 #Não encontrei comando de hibernar para o raspberry pi
 
-            elif env_button(SCREEN, 'N O', *QUESTION_ENV_BUTTONS_LAYOUT[1], click):
+            elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
                 pygame.time.delay(100)
-                main_env()
+                main_env(False)
 
-        pygame.display.update(QUESTION_ENV_BUTTONS_LAYOUT)
+        pygame.display.update()
 
 
 #SETTINGS MENU
 def env_settings_menu():
-    display_background()
+    display_background(SCREEN, True, False, 15)
 
     settingsmenu = True
     while settingsmenu:
         click = False
-        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
-        if env_button(SCREEN, 'H', *MAIN_ENV_BUTTONS_LAYOUT[0], click):
-            pygame.time.delay(100)
-            main_env()
-
-        if env_button(SCREEN, 'S H U T D O W N', *SETTINGS_ENV_BUTTONS_LAYOUT[0], click):
+        if env_button(SCREEN, False, 'S H U T D O W N', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
             pygame.time.delay(100)
             turnoff_system_menu('Shutdown')
 
-        elif env_button(SCREEN, 'R E S T A R T', *SETTINGS_ENV_BUTTONS_LAYOUT[1], click):
+        elif env_button(SCREEN, False, 'R E S T A R T', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
             pygame.time.delay(100)
             turnoff_system_menu('Restart')
 
-        elif env_button(SCREEN, 'H I B E R N A T E', *SETTINGS_ENV_BUTTONS_LAYOUT[2], click):
+        elif env_button(SCREEN, False, 'H I B E R N A T E', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[2], 2, 2, click):
             pygame.time.delay(100)
             turnoff_system_menu('Hibernate')
 
-        pygame.display.update(MAIN_ENV_BUTTONS_LAYOUT)
+        elif env_button(SCREEN, False, 'R E T U R N', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[3], 2, 2, click):
+            pygame.time.delay(100)
+            main_env(False)
+
+    pygame.display.update()
+
+#Add date and time here
+"""def date_and_time():
+    pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
+    
+    while True:
+        time = datetime.now()"""
 
 #MAIN ENVIRONMENT
-def main_env():
-    display_background()
+def main_env(fading):
+    display_background(SCREEN, False, False, 0)
+    pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.35), int(SCREEN_HEIGHT * 0.80), int(SCREEN_WIDTH * 0.30
+    ), int(SCREEN_WIDTH // 14)), int(1))
+    #date_and_time()
+
+    def start_game(game):
+        fadeout_screen(SCREEN, 255)
+        playing = True
+        while playing:
+            quit_game = game()
+            if quit_game == True:
+                break
+        main_env(False)
 
     envmenu = True
     while envmenu:
@@ -124,24 +137,26 @@ def main_env():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         
-        if env_button(SCREEN, 'H', *MAIN_ENV_BUTTONS_LAYOUT[0], click):
+        if env_button(SCREEN, False, 'H', HS_TEXT, HS_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
             pygame.time.delay(100)
             env_settings_menu()
 
-        elif env_button(SCREEN, 'TIC TAC TOE', *MAIN_ENV_BUTTONS_LAYOUT[1], click):
+        elif env_button(SCREEN, True, 'TIC TAC TOE', SMALL_TEXT, SMALL_BOLD_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[1], 2, 6, click):
             pygame.time.delay(100)
-            fadeout_screen(SCREEN)
-            galo_main_menu()
+            start_game(galo_main_menu)
 
-        elif env_button(SCREEN, 'SNOOKER', *MAIN_ENV_BUTTONS_LAYOUT[2], click):
-            pygame.time.delay(1000)
-            #snooker_main_menu()
+        elif env_button(SCREEN, True, 'SNOOKER', SMALL_TEXT, SMALL_BOLD_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[2], 2, 6, click):
+            pygame.time.delay(100)
+            #start_game()
 
-    pygame.display.update(MAIN_ENV_BUTTONS_LAYOUT)
+    pygame.display.update()
 
-#fadein_screen(SCREEN, main_env) #Ainda não funciona
-main_env()
+
+#STARTUP HERE
+
+#fadein_screen(SCREEN, 255)
+main_env(True)
