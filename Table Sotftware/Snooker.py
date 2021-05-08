@@ -1,8 +1,25 @@
 import pygame
 from assets.Color import *
 from assets.Dimensions import *
+from assets.buttons_and_text import *
 from math import sqrt, sin, cos, pi, atan, acos
 from random import randint
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption('Snooker')
+
+# image = pygame.image.load("assets/images/taco.png").convert()
+""" screen.blit(image, (0,0))
+pygame.display.flip()
+pygame.time.delay(1500) """
+
+BALL_RADIUS = int(20)
+HOLE_RADIUS = int((2 * BALL_RADIUS * 1.6)/2)
+TABLE_WIDTH = int(SCREEN_WIDTH)
+TABLE_HEIGHT = int(TABLE_WIDTH // 2)
+BORDER_SIZE = HOLE_RADIUS
+
+#print(2 * HOLE_RADIUS, TABLE_HEIGHT - BORDER_SIZE, TABLE_WIDTH / 2 - 3 * HOLE_RADIUS, BORDER_SIZE, WHITE)
 
 def AngleVector(x, y):
     """ Returns the angle of a vector with the x axis """
@@ -424,7 +441,6 @@ def bolaBranca(balls):
         return 1
     return 0
 
-
 def gotIn(balls, players, player, prev):
     flag1, flag2 = 0, 0
     if players[player].prevBalls < players[player].balls: #meteu uma(s) bola(s) sua
@@ -447,7 +463,6 @@ def gotIn(balls, players, player, prev):
         prev = len(balls)
         return 0, prev
     
-
 def defColor(players, player, balls):
     countB = 0
     countR = 0
@@ -532,23 +547,49 @@ def removeBall(players, player, balls):
         pygame.display.flip()
     return
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Snooker')
+def pause(w):
+    s = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT)) 
+    s.set_alpha(200)              
+    s.fill((20,20,20))
+    
+    w.blit(s, (0,0))
+    
+    text = MAIN_FONT.render("PAUSED", True,WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2,SCREEN_HEIGHT // 4)
+    w.blit(text, textRect)
+    
+    BUTTON_WIDTH = int(SCREEN_WIDTH * 0.8 // 3)
+    BUTTON_HEIGHT = int(SCREEN_HEIGHT * 5 // 55)
+    
+    MAIN_BUTTONS_LAYOUT = [((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 5 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                       ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 7 // 12, BUTTON_WIDTH, BUTTON_HEIGHT),
+                       ((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT * 9 // 12, BUTTON_WIDTH, BUTTON_HEIGHT)]
+    
+    sair = False
+    click = False
+    while not sair:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+        if button(w,'R E S U M E', *MAIN_BUTTONS_LAYOUT[0], click):
+            sair = True
+            return 1
+            break
+        elif button(w,'R E S T A R T', *MAIN_BUTTONS_LAYOUT[1], click):
+            sair = True
+            return 2
+        elif button(w,'Q U I T', *MAIN_BUTTONS_LAYOUT[2], click):
+            sair = True
+            return 3
 
-# image = pygame.image.load("assets/images/taco.png").convert()
-""" screen.blit(image, (0,0))
-pygame.display.flip()
-pygame.time.delay(1500) """
+stick = taco(0,0,10)
 
-BALL_RADIUS = int(20)
-HOLE_RADIUS = int((2 * BALL_RADIUS * 1.6)/2)
-TABLE_WIDTH = int(SCREEN_WIDTH)
-TABLE_HEIGHT = int(TABLE_WIDTH // 2)
-BORDER_SIZE = HOLE_RADIUS
+def Snooker():      
 
-#print(2 * HOLE_RADIUS, TABLE_HEIGHT - BORDER_SIZE, TABLE_WIDTH / 2 - 3 * HOLE_RADIUS, BORDER_SIZE, WHITE)
-
-walls = [
+    walls = [
     Border(2.2 * HOLE_RADIUS, 0, TABLE_WIDTH / 2 - 3.2 * HOLE_RADIUS, BORDER_SIZE, WHITE), 
     Border(HOLE_RADIUS + TABLE_WIDTH / 2, 0, TABLE_WIDTH / 2 - 3.2 * HOLE_RADIUS, BORDER_SIZE, WHITE), 
     Border(0, 2.2 * HOLE_RADIUS, BORDER_SIZE, TABLE_HEIGHT - 4.4 * HOLE_RADIUS, WHITE),
@@ -556,150 +597,169 @@ walls = [
     Border(HOLE_RADIUS + TABLE_WIDTH / 2, TABLE_HEIGHT - BORDER_SIZE, TABLE_WIDTH / 2 - 3.2 * HOLE_RADIUS, BORDER_SIZE, WHITE), 
     Border(TABLE_WIDTH - BORDER_SIZE, 2.2 * HOLE_RADIUS, BORDER_SIZE, TABLE_HEIGHT - 4.4 * HOLE_RADIUS, WHITE),
     ]
-
-holes = [
-    Hole(HOLE_RADIUS, HOLE_RADIUS, HOLE_RADIUS, BLACK), 
-    Hole(TABLE_WIDTH - HOLE_RADIUS, TABLE_HEIGHT - HOLE_RADIUS, HOLE_RADIUS, BLACK), 
-    Hole(HOLE_RADIUS, TABLE_HEIGHT - HOLE_RADIUS, HOLE_RADIUS, BLACK), 
-    Hole(TABLE_WIDTH - HOLE_RADIUS, HOLE_RADIUS, HOLE_RADIUS, BLACK), 
-    Hole(TABLE_WIDTH/2, 0, HOLE_RADIUS, BLACK), 
-    Hole(TABLE_WIDTH/2, TABLE_HEIGHT, HOLE_RADIUS, BLACK)
+    
+    holes = [
+        Hole(HOLE_RADIUS, HOLE_RADIUS, HOLE_RADIUS, BLACK), 
+        Hole(TABLE_WIDTH - HOLE_RADIUS, TABLE_HEIGHT - HOLE_RADIUS, HOLE_RADIUS, BLACK), 
+        Hole(HOLE_RADIUS, TABLE_HEIGHT - HOLE_RADIUS, HOLE_RADIUS, BLACK), 
+        Hole(TABLE_WIDTH - HOLE_RADIUS, HOLE_RADIUS, HOLE_RADIUS, BLACK), 
+        Hole(TABLE_WIDTH/2, 0, HOLE_RADIUS, BLACK), 
+        Hole(TABLE_WIDTH/2, TABLE_HEIGHT, HOLE_RADIUS, BLACK)
+        ]
+    
+    balls = [
+        Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 15),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, LIGHT_BLACK),
+        Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, RED),
     ]
-
-balls = [
-    Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 15),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, LIGHT_BLACK),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
-    Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-    Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, RED),
-]
-
-balls_in_hole = []
-
-pygame.display.flip()
-
-running = True
-
-stick = taco(0,0,10)
-flag = 0
-
-players = [Player(), Player()]
-player = 0
-prev = 16
-
-blackin = 0
-
-while running:
-    pygame.time.delay(10)
-    screen.fill(DARK_GREEN)
     
-    for hole in holes:
-        hole.Render()
-
-    for b in balls:
-        b.Render()
-        b.Move()
-
-    for b in balls_in_hole:
-        b.Render()
-        b.Move()
-
-    for wall in walls:
-        wall.Render()
-
+    balls_in_hole = []
+    
     pygame.display.flip()
-
-    balls_to_remove = []
-
-    for i in range(0, len(balls)):
-        for j in range(i+1, len(balls)):
-            balls[i].CheckCollision(balls[j])
-
-        for wall in walls:
-            wall.CheckCollision(balls[i])
-
-        for hole in holes:
-            if hole.CheckCollision(balls[i]):
-                balls_to_remove.append(i)
-
-    balls_to_remove.sort(reverse=True)
-
-    for i in balls_to_remove:
-        if players[player].color != -1:
-            if balls[i].color == BLUE and players[player].color == 1:
-                players[player].balls += 1
-            elif balls[i].color == RED and players[player].color == 0:
-                players[player].balls += 1
-            elif balls[i].color == BLUE and players[player].color == 0:
-                players[(player + 1) % 2].balls += 1
-            elif balls[i].color == RED and players[player].color == 1:
-                players[(player + 1) % 2].balls += 1
-        if balls[i].color == LIGHT_BLACK:
-            blackin = 1
-
-        flag = 1
-        ball = balls.pop(i)
-
-        balls_in_hole.append(ball)
     
-    balls_to_remove = []
-
-    for i in range(0, len(balls_in_hole)):
-        ball.radius -= 1
-        if ball.radius < 0:
-            flag = 0
-            balls_to_remove.append(i)
-
-    balls_to_remove.sort(reverse=True)
-    for i in balls_to_remove:
-        balls_in_hole.pop(i)
-
-    if (stoped(balls) and not flag): #time for a move!
-
-        #if in the first move a player puts all the balls from his color and the black one (pretty much impossible) he will lose :/
-
-        if blackin and (players[player].balls < 7): #black gone before its time..
-            print("Player ", (player + 1) % 2 + 1, "Wins!")
-            break
-
-        if blackin and (players[player].balls == 7):
-            if balls[0].color != White: #meteu a preta e a branca...
+    running = True
+    
+    flag = 0
+    
+    players = [Player(), Player()]
+    player = 0
+    prev = 16
+    
+    blackin = 0
+    
+    while running:
+        pygame.time.delay(10)
+        screen.fill(DARK_GREEN)
+        
+        pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//19),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//19),(SCREEN_HEIGHT-(SCREEN_HEIGHT//12))),10) #pause button
+        pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//12))),10)
+        
+        for hole in holes:
+            hole.Render()
+    
+        for b in balls:
+            b.Render()
+            b.Move()
+    
+        for b in balls_in_hole:
+            b.Render()
+            b.Move()
+    
+        for wall in walls:
+            wall.Render()
+    
+        pygame.display.flip()
+    
+        balls_to_remove = []
+    
+        for i in range(0, len(balls)):
+            for j in range(i+1, len(balls)):
+                balls[i].CheckCollision(balls[j])
+    
+            for wall in walls:
+                wall.CheckCollision(balls[i])
+    
+            for hole in holes:
+                if hole.CheckCollision(balls[i]):
+                    balls_to_remove.append(i)
+    
+        balls_to_remove.sort(reverse=True)
+    
+        for i in balls_to_remove:
+            if players[player].color != -1:
+                if balls[i].color == BLUE and players[player].color == 1:
+                    players[player].balls += 1
+                elif balls[i].color == RED and players[player].color == 0:
+                    players[player].balls += 1
+                elif balls[i].color == BLUE and players[player].color == 0:
+                    players[(player + 1) % 2].balls += 1
+                elif balls[i].color == RED and players[player].color == 1:
+                    players[(player + 1) % 2].balls += 1
+            if balls[i].color == LIGHT_BLACK:
+                blackin = 1
+    
+            flag = 1
+            ball = balls.pop(i)
+    
+            balls_in_hole.append(ball)
+        
+        balls_to_remove = []
+    
+        for i in range(0, len(balls_in_hole)):
+            ball.radius -= 1
+            if ball.radius < 0:
+                flag = 0
+                balls_to_remove.append(i)
+    
+        balls_to_remove.sort(reverse=True)
+        for i in balls_to_remove:
+            balls_in_hole.pop(i)
+    
+        if (stoped(balls) and not flag): #time for a move!
+    
+            #if in the first move a player puts all the balls from his color and the black one (pretty much impossible) he will lose :/
+    
+            if blackin and (players[player].balls < 7): #black gone before its time..
                 print("Player ", (player + 1) % 2 + 1, "Wins!")
                 break
-            else: #meteu a preta e ganhou!
-                print("Player ", player + 1, "Wins!")
-                break 
-
-        if bolaBranca(balls): #remove a ball from current player
-            removeBall(players, player, balls)           
+    
+            if blackin and (players[player].balls == 7):
+                if balls[0].color != White: #meteu a preta e a branca...
+                    print("Player ", (player + 1) % 2 + 1, "Wins!")
+                    break
+                else: #meteu a preta e ganhou!
+                    print("Player ", player + 1, "Wins!")
+                    break 
+    
+            if bolaBranca(balls): #remove a ball from current player
+                removeBall(players, player, balls)           
+                
+            idk, prev = gotIn(balls, players, player, prev) 
+            if idk and (players[0].color == -1): #determine each players color     
+                defColor(players, player, balls)
+            if not idk: #no ball got in (changes players)
+                player += 1
+                if player == 2:
+                    player = 0
+            #print(player + 1) #currently this player is moving
+            print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
+            stick.move(balls, holes, walls)
             
-        idk, prev = gotIn(balls, players, player, prev) 
-        if idk and (players[0].color == -1): #determine each players color     
-            defColor(players, player, balls)
-        if not idk: #no ball got in (changes players)
-            player += 1
-            if player == 2:
-                player = 0
-        #print(player + 1) #currently this player is moving
-        print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
-        stick.move(balls, holes, walls)
-        
-        
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            running = False
+            
+    
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5): #se clicarem na pausa
+                    if (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))):
+                        option = pause(screen)
+                        if option == 1: #return
+                            pygame.time.delay(100)
+                            pass
+                        elif option == 2: #restart
+                            Snooker()
+                        elif option == 3: #quit
+                            pygame.quit()
+                            running = False
+                        
+                        
+                        
+Snooker()
