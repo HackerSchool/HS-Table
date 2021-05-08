@@ -62,17 +62,6 @@ def turnoff_system_menu(turnoff_system):
                 pygame.time.delay(100)
                 main_env(False)
 
-        elif turnoff_system == 'Hibernate':
-            setup_turnoff_system_menu(turnoff_system)
-
-            if env_button(SCREEN, False, 'Y E S', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
-                pygame.time.delay(100)
-                #Não encontrei comando de hibernar para o raspberry pi
-
-            elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
-                pygame.time.delay(100)
-                main_env(False)
-
         pygame.display.update()
 
 
@@ -98,11 +87,7 @@ def env_settings_menu():
             pygame.time.delay(100)
             turnoff_system_menu('Restart')
 
-        elif env_button(SCREEN, False, 'H I B E R N A T E', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[2], 2, 2, click):
-            pygame.time.delay(100)
-            turnoff_system_menu('Hibernate')
-
-        elif env_button(SCREEN, False, 'R E T U R N', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[3], 2, 2, click):
+        elif env_button(SCREEN, False, 'R E T U R N', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[2], 2, 2, click):
             pygame.time.delay(100)
             main_env(False)
 
@@ -118,8 +103,7 @@ def env_settings_menu():
 #MAIN ENVIRONMENT
 def main_env(fading):
     display_background(SCREEN, False, False, 0)
-    pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.35), int(SCREEN_HEIGHT * 0.80), int(SCREEN_WIDTH * 0.30
-    ), int(SCREEN_WIDTH // 14)), int(1))
+    pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.32), int(SCREEN_HEIGHT * 0.10), int(SCREEN_WIDTH * 0.35), int(SCREEN_WIDTH // 15)), 1)
     #date_and_time()
 
     def start_game(game):
