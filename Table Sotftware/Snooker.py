@@ -584,6 +584,56 @@ def pause(w):
         elif button(w,'Q U I T', *MAIN_BUTTONS_LAYOUT[2], click):
             sair = True
             return 3
+        
+        
+def draw (screen,players,player):
+
+    pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//19),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//19),(SCREEN_HEIGHT-(SCREEN_HEIGHT//12))),10) #pause button
+    pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//12))),10)
+   
+    color = players[0].color
+    if color == 0: # player 0 is red
+        text_b = "Blue Player: " + str(players[1].balls) 
+        text_r = "Red Player: " + str(players[0].balls)
+    else:
+        text_b = "Blue Player: " + str(players[0].balls)
+        text_r = "Red Player: " + str(players[1].balls)
+    
+    string_b = SMALL_FONT.render(str(text_b),True,WHITE)
+    string_r = SMALL_FONT.render(str(text_r),True,WHITE)
+    
+    string_br = string_b.get_rect()
+    string_rr = string_r.get_rect()
+    
+    string_br.center = (((SCREEN_WIDTH//2) - (SCREEN_WIDTH//5)),(SCREEN_HEIGHT - (SCREEN_HEIGHT//21)))
+    string_rr.center = (((SCREEN_WIDTH//2) + (SCREEN_WIDTH//5)),(SCREEN_HEIGHT - (SCREEN_HEIGHT//21)))
+    
+    screen.blit(string_b,string_br)
+    screen.blit(string_r,string_rr)
+    
+def win(screen,player,players,who):
+    
+    # who = o -> other player wins ; who = t -> this player wins
+    
+    s = pygame.Surface((LARGURA,ALTURA)) 
+    s.set_alpha(1000)              
+    s.fill((20,20,20))
+    w.blit(s, (0,0))
+    
+    if who == o: #other player wins
+        who = (player + 1) % 2
+    
+    else: #this player wins
+        who = player 
+        
+    color = players[who].color
+    
+    if color == 1: # Blue player wins
+         print ("blue player wins!")
+    else: # Red player wins
+        print ("red player wins!")
+    
+
 
 stick = taco(0,0,10)
 
@@ -646,8 +696,7 @@ def Snooker():
         pygame.time.delay(10)
         screen.fill(DARK_GREEN)
         
-        pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//19),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//19),(SCREEN_HEIGHT-(SCREEN_HEIGHT//12))),10) #pause button
-        pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//30))), ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT//12))),10)
+        draw(screen,players,player)
         
         for hole in holes:
             hole.Render()
@@ -715,14 +764,17 @@ def Snooker():
             #if in the first move a player puts all the balls from his color and the black one (pretty much impossible) he will lose :/
     
             if blackin and (players[player].balls < 7): #black gone before its time..
+                win(screen,player,players, o)
                 print("Player ", (player + 1) % 2 + 1, "Wins!")
                 break
     
             if blackin and (players[player].balls == 7):
                 if balls[0].color != White: #meteu a preta e a branca...
+                    win(screen, player,players, o)
                     print("Player ", (player + 1) % 2 + 1, "Wins!")
                     break
                 else: #meteu a preta e ganhou!
+                    win(screen,player,players,t) 
                     print("Player ", player + 1, "Wins!")
                     break 
     
