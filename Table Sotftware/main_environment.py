@@ -10,7 +10,8 @@ from assets.Fonts import *
 from assets.env_buttons_and_text import *
 from assets.env_background import *
 from assets.fade import *
-from datetime import date
+from datetime import datetime
+from time import time
 
 #Defining screen
 Fullscreen = True
@@ -94,13 +95,27 @@ def env_settings_menu():
     pygame.display.update()
 
 #Add date and time here
-"""def date_and_time():
-    pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
+def date_and_time():
+    #pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
     
-    while True:
-        time = datetime.now()"""
+    #while True:
+    time = datetime.now()
+    string = str(time.strftime("%d/%m/%Y %H:%M"))
+    segundos = int(time.strftime("%S"))
+
+    text_w = SMALL_FONT.render(str(string), True,WHITE)
+
+    pygame.draw.rect(SCREEN, MAIN_BACK, (int(SCREEN_WIDTH*0.77), int(SCREEN_HEIGHT * 0.9), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
+    
+    textwRect = text_w.get_rect()
+    textwRect.center = (8.8 * SCREEN_WIDTH//10, 9.5 * SCREEN_HEIGHT//10)
+    SCREEN.blit(text_w,textwRect)
+    pygame.display.update()
+    return segundos
+        
 
 #MAIN ENVIRONMENT
+aux, itstime = 0, 0
 def main_env(fading):
     display_background(SCREEN, False, False, 0)
     pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.32), int(SCREEN_HEIGHT * 0.10), int(SCREEN_WIDTH * 0.35), int(SCREEN_WIDTH // 15)), 1)
@@ -116,7 +131,17 @@ def main_env(fading):
         main_env(False)
 
     envmenu = True
+    prev = time()
+    first = 1
     while envmenu:
+        aux = time()
+        istime = aux - prev
+        if istime >= 60 or first:
+            segundos = date_and_time()
+            prev = aux - segundos            
+            first = 0
+        pygame.display.update()
+        pygame.time.delay(200)
         click = False
 
         for event in pygame.event.get():
