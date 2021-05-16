@@ -96,8 +96,6 @@ def env_settings_menu():
 
 #Add date and time here
 def date_and_time():
-    #pygame.draw.rect(SCREEN, GREY, (int(SCREEN_WIDTH / 1.355), int(SCREEN_HEIGHT * 0.935), int(1 / 4 * SCREEN_WIDTH), int(50 / 1440 * SCREEN_HEIGHT)))
-    
     #while True:
     time = datetime.now()
     string = str(time.strftime("%d/%m/%Y %H:%M"))
@@ -105,7 +103,7 @@ def date_and_time():
 
     text_w = SMALL_FONT.render(str(string), True,WHITE)
 
-    pygame.draw.rect(SCREEN, MAIN_BACK, (int(SCREEN_WIDTH*0.77), int(SCREEN_HEIGHT * 0.9), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
+    pygame.draw.rect(SCREEN, MAIN_BACK, (int(SCREEN_WIDTH * 0.77 + 2.5), int(SCREEN_HEIGHT * 0.9 + 2.5), int(SCREEN_WIDTH // 4.5), int(SCREEN_HEIGHT // 11)))
     
     textwRect = text_w.get_rect()
     textwRect.center = (8.8 * SCREEN_WIDTH//10, 9.5 * SCREEN_HEIGHT//10)
@@ -118,8 +116,7 @@ def date_and_time():
 aux, itstime = 0, 0
 def main_env(fading):
     display_background(SCREEN, False, False, 0)
-    pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.32), int(SCREEN_HEIGHT * 0.10), int(SCREEN_WIDTH * 0.35), int(SCREEN_WIDTH // 15)), 1)
-    #date_and_time()
+    pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.76), int(SCREEN_HEIGHT * 0.9 - 2.5), int(SCREEN_WIDTH // 4.2), int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.90)), 1)
 
     def start_game(game):
         fadeout_screen(SCREEN, 255)
@@ -141,7 +138,6 @@ def main_env(fading):
             prev = aux - segundos            
             first = 0
         pygame.display.update()
-        pygame.time.delay(200)
         click = False
 
         for event in pygame.event.get():
@@ -149,7 +145,7 @@ def main_env(fading):
                 pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
-        
+
         if env_button(SCREEN, False, 'H', HS_TEXT, HS_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
             pygame.time.delay(100)
             env_settings_menu()
