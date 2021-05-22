@@ -168,7 +168,7 @@ class taco():
         self.image = pygame.transform.rotate(self.original, self.angle)
         screen.blit(self.image, (pos[0] - self.image.get_width() // 2, pos[1] - self.image.get_height() // 2))
         pygame.display.flip() 
-        pygame.time.delay(15)
+        #pygame.time.delay(15)
         #self.erase(holes, balls, walls, players, player)
 
     
@@ -188,7 +188,7 @@ class taco():
         
         screen.blit(self.image, (x - self.image.get_width() // 2, y - self.image.get_height() // 2))
         pygame.display.flip() 
-        pygame.time.delay(15)
+        #pygame.time.delay(15)
         return 0, [x, y]
         #self.erase(holes, balls, walls, players, player)
 
@@ -203,35 +203,34 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5): #se clicarem na pausa
-                        if (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))):
-                            option = pause(screen)
-                            if option == 1: #return
-                                pygame.time.delay(100)
-                                screen.fill(DARK_GREEN)  
-                                for hole in holes:
-                                    hole.Render()
+                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                        option = pause(screen)
+                        if option == 1: #return
+                            pygame.time.delay(100)
+                            screen.fill(DARK_GREEN)  
+                            for hole in holes:
+                                hole.Render()
 
-                                for b in balls:
-                                    if b == balls[0]:
-                                        continue
-                                    b.Render()
+                            for b in balls:
+                                if b == balls[0]:
+                                    continue
+                                b.Render()
 
-                                for wall in walls:
-                                    wall.Render()
-                                drawWhite(screen,players,player) 
+                            for wall in walls:
+                                wall.Render()
+                            drawWhite(screen,players,player) 
 
-                                pygame.display.flip()
-                                break
-                            elif option == 2: #restart
-                                Snooker()
-                                return
-                            elif option == 3: #quit
-                                pygame.quit()
-                                running = False
-                                return
-                                """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
-                                    continue """
+                            pygame.display.flip()
+                            break
+                        elif option == 2: #restart
+                            Snooker()
+                            return
+                        elif option == 3: #quit
+                            pygame.quit()
+                            running = False
+                            return
+                            """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
+                                continue """
                     elif Check(balls[0], pos):
                             continue
                     else:
@@ -252,39 +251,38 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5): #se clicarem na pausa
-                        if (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))):
-                            option = pause(screen)
-                            if option == 1: #return
-                                pygame.time.delay(100)
-                                screen.fill(DARK_GREEN)  
-                                for hole in holes:
-                                    hole.Render()
+                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                        option = pause(screen)
+                        if option == 1: #return
+                            pygame.time.delay(100)
+                            screen.fill(DARK_GREEN)  
+                            for hole in holes:
+                                hole.Render()
 
-                                for b in balls:
-                                    if b == balls[0]:
-                                        continue
-                                    b.Render()
+                            for b in balls:
+                                if b == balls[0]:
+                                    continue
+                                b.Render()
 
-                                for wall in walls:
-                                    wall.Render()
-                                drawWhite(screen,players,player) 
+                            for wall in walls:
+                                wall.Render()
+                            drawWhite(screen,players,player) 
 
-                                pygame.display.flip()
-                                break
-                            elif option == 2: #restart
-                                Snooker()
-                                return
-                            elif option == 3: #quit
-                                pygame.quit()
-                                running = False
-                                return
-                                """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
-                                    continue """
+                            pygame.display.flip()
+                            break
+                        elif option == 2: #restart
+                            Snooker()
+                            return
+                        elif option == 3: #quit
+                            pygame.quit()
+                            running = False
+                            return
+                            """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
+                                continue """
                     else:
                         self.erase(holes, balls, walls, players, player)
                         aux, pos = self.render2(pos, balls)
-                        if aux:
+                        if aux and not first:
                             if self.CheckCollision(balls[0]):
                                 flag = 0
                                 break
@@ -295,17 +293,21 @@ class taco():
                             vel_y = 0
                             first = 0
                         else:
-                            vel_x = (pos[0] - stickPrev[0]) / 2
-                            vel_y = (pos[1] - stickPrev[1]) / 2
+                            vel_x = (pos[0] - stickPrev[0]) / 1.5
+                            vel_y = (pos[1] - stickPrev[1]) / 1.5
 
                         stickPrev = pos
                         vel_xPrev.append(vel_x) 
                         vel_yPrev.append(vel_y)
-                        if (len(vel_xPrev) > 10):
+                        if (len(vel_xPrev) > 5):
                             vel_xPrev.pop(0)
                             vel_yPrev.pop(0)
                         self.vel_x = sum(vel_xPrev) / len(vel_xPrev)
                         self.vel_y = sum(vel_yPrev) / len(vel_yPrev)
+                        """ print("X: ", vel_xPrev)
+                        print("Y: ", vel_yPrev) """
+                elif not first:
+                    first = 1
                         
                     
                 
@@ -729,9 +731,9 @@ def drawWhite(screen, players, player):
     pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//19),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) - TABLE_HEIGHT // 30), ((SCREEN_WIDTH//19),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) + TABLE_HEIGHT // 30), TABLE_WIDTH // 120) #pause button
     pygame.draw.line (screen, WHITE, ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) - TABLE_HEIGHT // 30), ((SCREEN_WIDTH//30),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) + TABLE_HEIGHT // 30),TABLE_WIDTH // 120)
     if players[player].color == 0:
-        text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1) + "(Red)"
+        text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1) + " (Blue)"
     elif players[player].color == 1:
-        text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1) + "(Blue)"
+        text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1) + " (Red)"
     else:
         text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1)
 
@@ -837,9 +839,9 @@ def Snooker():
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
-        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED ),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK), #para testar a bola preta entrar
@@ -890,11 +892,11 @@ def Snooker():
     
         balls_to_remove = []
 
-        if first:
+        """ if first:
             first = 0
             print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
             stick.move(balls, holes, walls, players, player)
-            continue
+            continue """
 
     
         for i in range(0, len(balls)):
