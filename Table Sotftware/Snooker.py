@@ -203,7 +203,7 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
                         option = pause(screen)
                         if option == 1: #return
                             pygame.time.delay(100)
@@ -212,13 +212,11 @@ class taco():
                                 hole.Render()
 
                             for b in balls:
-                                if b == balls[0]:
-                                    continue
                                 b.Render()
 
                             for wall in walls:
                                 wall.Render()
-                            drawWhite(screen,players,player) 
+                            drawMove(screen,players,player) 
 
                             pygame.display.flip()
                             break
@@ -251,7 +249,7 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
                         option = pause(screen)
                         if option == 1: #return
                             pygame.time.delay(100)
@@ -260,8 +258,6 @@ class taco():
                                 hole.Render()
 
                             for b in balls:
-                                if b == balls[0]:
-                                    continue
                                 b.Render()
 
                             for wall in walls:
@@ -619,7 +615,7 @@ def gotIn(players, player):
         players[player].prevBalls = 7 - countB
         players[(player + 1) % 2].prevBalls = 7 - countR """
 
-def aux(players, player, balls): #bug ainda pode correr mal se estiver a linha toda quase toda ocupada..
+def aux(balls): #bug ainda pode correr mal se estiver a linha toda quase toda ocupada..
     flag = 1
     while flag:
         for b in balls:
@@ -652,16 +648,17 @@ def removeBall(players, player, balls):
     if players[player].balls != 0:
         if players[player].color == 1:
             balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE))
-            aux(players, player, balls)
+            aux(balls)
         elif players[player].color == 0:
             balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, RED))
-            aux(players, player, balls)
+            aux(balls)
         else: #já havia bolas dentro de buracos mas ainda n havia cores definidas
             balls.append(Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE))
-            aux(players, player, balls)
+            aux(balls)
             players[player].color = 1
             players[(player + 1) % 2].color = 0
         players[player].balls -= 1
+        players[player].prevBalls -= 1
         balls[len(balls) - 1].Render()
         pygame.display.flip()
     return
@@ -831,16 +828,17 @@ def Snooker():
         ]
     
     balls = [
-        #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 5),
-        Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
+        Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 5),
+        #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, BLUE),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-        #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
-        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
+        #Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
+        Ball(TABLE_WIDTH - 55, TABLE_HEIGHT // 4, BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
-        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED ),
+        #Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED ),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
@@ -892,11 +890,11 @@ def Snooker():
     
         balls_to_remove = []
 
-        """ if first:
+        if first:
             first = 0
             print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
             stick.move(balls, holes, walls, players, player)
-            continue """
+            continue
 
     
         for i in range(0, len(balls)):
@@ -974,7 +972,7 @@ def Snooker():
                 break
     
             if blackin and (players[player].balls == 7):
-                if balls[0].color != White: #meteu a preta e a branca...
+                if balls[0].color != WHITE: #meteu a preta e a branca...
                     win(screen, player,players, "o")
                     print("Player ", (player + 1) % 2 + 1, "Wins!")
                     break
@@ -982,7 +980,8 @@ def Snooker():
                     win(screen, player, players, "t") 
                     print("Player ", player + 1, "Wins!")
                     break 
-    
+    #Bug de se a bola branca entrar e o outro jogador mete uma bola sua no buraco depois em vez de jogar again muda
+    #Bug de se entrar na pausa e der continuar a bola branca e o taco desaparecem 
             if bolaBranca(balls, holes, walls, players, player): #remove a ball from current player
                 removeBall(players, player, balls)           
                 
