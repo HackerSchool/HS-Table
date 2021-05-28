@@ -720,7 +720,6 @@ def drawMove(screen, players, player):
     string_br.center = ((SCREEN_WIDTH//2),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
     screen.blit(string_b,string_br)
 
-
 def drawWhite(screen, players, player):
     pygame.draw.rect(screen, GREY, (0, int(TABLE_HEIGHT), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
     pygame.draw.line(screen, BLUE_IST, (0, int(TABLE_HEIGHT + TABLE_HEIGHT/140 - 1)), (int(SCREEN_WIDTH), int(TABLE_HEIGHT + TABLE_HEIGHT/140 - 1)), int(TABLE_HEIGHT / 70))
@@ -739,7 +738,6 @@ def drawWhite(screen, players, player):
     string_br.center = ((SCREEN_WIDTH//2),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
     screen.blit(string_b,string_br)
 
-    
 def draw(screen, players, player):
     pygame.draw.rect(screen, GREY, (0, int(TABLE_HEIGHT), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
     pygame.draw.line(screen, BLUE_IST, (0, int(TABLE_HEIGHT + TABLE_HEIGHT/140 - 1)), (int(SCREEN_WIDTH), int(TABLE_HEIGHT + TABLE_HEIGHT/140 - 1)), int(TABLE_HEIGHT / 70))
@@ -783,26 +781,46 @@ def win(screen,player,players,who):
     # who = o -> other player wins ; who = t -> this player wins
     
     s = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT)) 
-    s.set_alpha(1000)              
+    s.set_alpha(200)              
     s.fill((20,20,20))
     screen.blit(s, (0,0))
     
     if who == "o": #other player wins
-        who = (player + 1) % 2
+        who = (player + 1) % 2 
     
     else: #this player wins
-        who = player
-        
+        who = player 
+    
     color = players[who].color
     
     if color == 1: # Blue player wins
-        print ("Blue player wins!")
+        string = "Player " + str(who+1) + " (BLue) Wins!"
     elif color == 0: # Red player wins
-        print ("Red player wins!")
+        string = "Player " + str(who+1) + " (Red) Wins!"
     else:
-        print("Well.. Fuck")
-        print("Player", who + 1, "Wins!")
+        string = "Player " + str( who + 1) + " Wins!"
     
+    text_w = MAIN_FONT.render(str(string), True,LIGHT_GREEN)
+    textwRect = text_w.get_rect()
+    textwRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    
+    text_t = SMALL_FONT.render("TAP TO CONTINUE",True, WHITE)
+    texttRect = text_t.get_rect()
+    texttRect.center = (SCREEN_WIDTH//2,(SCREEN_HEIGHT//2)+(SCREEN_HEIGHT//7))
+    
+    screen.blit(text_w,textwRect)
+    screen.blit(text_t,texttRect)
+    
+    pygame.display.update()
+
+    while True:
+        pygame.display.update()            
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.quit()
+                return False
+
+
 
 
 stick = taco(0,0,10)
@@ -832,18 +850,18 @@ def Snooker():
         #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2, BALL_RADIUS, BLUE),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-        Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
-        #Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
+        #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
+        Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
-        Ball(TABLE_WIDTH - 55, TABLE_HEIGHT // 4, BALL_RADIUS, RED),
+        #Ball(TABLE_WIDTH - 55, TABLE_HEIGHT // 4, BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 - 4 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
-        #Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED ),
+        Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED ),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 + 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE ),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - (BALL_RADIUS + 1), BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11 - 2 * BALL_RADIUS, TABLE_HEIGHT // 2 - 3 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
-        #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK), #para testar a bola preta entrar
-        Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, LIGHT_BLACK),
+        Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK), #para testar a bola preta entrar
+        #Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, LIGHT_BLACK),
         Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED),
         Ball(10 *TABLE_WIDTH // 11 - 4 * BALL_RADIUS, TABLE_HEIGHT // 2 - 2 * (BALL_RADIUS + 1), BALL_RADIUS, BLUE),
         Ball(10 *TABLE_WIDTH // 11 - 6 * BALL_RADIUS, TABLE_HEIGHT // 2 + (BALL_RADIUS + 1), BALL_RADIUS, RED),
@@ -967,17 +985,17 @@ def Snooker():
             #if in the first move a player puts all the balls from his color and the black one (pretty much impossible) he will lose :/
     
             if blackin and (players[player].balls < 7): #black gone before its time..
-                win(screen,player,players, "o")
+                running = win(screen,player,players, "o")
                 print("Player ", (player + 1) % 2 + 1, "Wins!")
                 break
     
             if blackin and (players[player].balls == 7):
                 if balls[0].color != WHITE: #meteu a preta e a branca...
-                    win(screen, player,players, "o")
+                    running = win(screen, player,players, "o")
                     print("Player ", (player + 1) % 2 + 1, "Wins!")
                     break
                 else: #meteu a preta e ganhou!
-                    win(screen, player, players, "t") 
+                    running = win(screen, player, players, "t") 
                     print("Player ", player + 1, "Wins!")
                     break 
     #Bug de se a bola branca entrar e o outro jogador mete uma bola sua no buraco depois em vez de jogar again muda
@@ -1002,8 +1020,8 @@ def Snooker():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5): #se clicarem na pausa
-                    if (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))):
+                if (pos[0] > ((SCREEN_WIDTH//30)-(TABLE_WIDTH // 120))) and (pos[0] < ((SCREEN_WIDTH//19)+(TABLE_WIDTH // 120))): #se clicarem na pausa
+                    if (pos[1] > ((SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) - TABLE_HEIGHT // 30)) and (pos[1] < ((SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) + TABLE_HEIGHT // 30)):
                         option = pause(screen)
                         if option == 1: #return
                             pygame.time.delay(100)
