@@ -818,25 +818,33 @@ def win(screen,player,players,who):
     
     text_w = MAIN_FONT.render(str(string), True,LIGHT_GREEN)
     textwRect = text_w.get_rect()
-    textwRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    textwRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - (SCREEN_HEIGHT//7))
     
-    text_t = SMALL_FONT.render("TAP TO CONTINUE",True, WHITE)
+    text_t = SMALL_FONT.render("WOULD YOU LIKE TO PLAY AGAIN?",True, WHITE)
     texttRect = text_t.get_rect()
-    texttRect.center = (SCREEN_WIDTH//2,(SCREEN_HEIGHT//2)+(SCREEN_HEIGHT//7))
+    texttRect.center = (SCREEN_WIDTH//2,(SCREEN_HEIGHT//2))
     
     screen.blit(text_w,textwRect)
     screen.blit(text_t,texttRect)
     
     pygame.display.update()
-
-    while True:
-        pygame.display.update()            
+    
+    sair = False
+    click = False
+    while not sair:
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.QUIT:
                 pygame.quit()
-                return False
-
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+        if button(screen,'Y E S',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) - SCREEN_WIDTH//12),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT), click):
+            sair = True
+            Snooker()
+        elif button(screen,'N O',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) + SCREEN_WIDTH//6),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT) , click):
+            sair = True
+            pygame.quit()
+            return False
+        
 
 
 stick = taco(0,0,10)
@@ -888,11 +896,11 @@ def Snooker():
 
     # ponham aqui as bolas para testar coisas
     balls += [
-        # Ball(10 *TABLE_WIDTH // 11 - 10, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 0),
-        # Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 50),
-        # Ball(TABLE_WIDTH // 5 * 4,3 * TABLE_HEIGHT // 4, BALL_RADIUS, WHITE),
-        # Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
-        # Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK), #para testar a bola preta entrar
+        #Ball(10 *TABLE_WIDTH // 11 - 10, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 0),
+        #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 50),
+        #Ball(TABLE_WIDTH // 5 * 4,3 * TABLE_HEIGHT // 4, BALL_RADIUS, WHITE),
+        #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
+        Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK) #para testar a bola preta entrar
         # Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
         # Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED, 50),
     ]
