@@ -6,6 +6,7 @@ from assets.Dimensions import *
 from assets.buttons_and_text import *
 from math import sqrt, sin, cos, pi, atan, acos
 from random import randint
+from assets.fade import *
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Snooker')
@@ -839,10 +840,10 @@ def win(screen,player,players,who):
                 click = True
         if button(screen,'Y E S',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) - SCREEN_WIDTH//12),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT), click):
             sair = True
-            Snooker()
+            Snooker() # Dá bug ao tentar sair do jogo depois ao recomeçar
+
         elif button(screen,'N O',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) + SCREEN_WIDTH//6),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT) , click):
             sair = True
-            pygame.quit()
             return False
         
 
@@ -1023,16 +1024,28 @@ def Snooker():
             if blackin and (players[player].balls < 7): #black gone before its time..
                 running = win(screen,player,players, "o")
                 print("Player ", (player + 1) % 2 + 1, "Wins!")
+                if running == False:
+                    quit_game = True
+                    fadeout_screen(screen, 255)
+                    return quit_game
                 break
     
             if blackin and (players[player].balls == 7):
                 if balls[0].color != WHITE: #meteu a preta e a branca...
                     running = win(screen, player,players, "o")
                     print("Player ", (player + 1) % 2 + 1, "Wins!")
+                    if running == False:
+                        quit_game = True
+                        fadeout_screen(screen, 255)
+                        return quit_game
                     break
                 else: #meteu a preta e ganhou!
                     running = win(screen, player, players, "t") 
                     print("Player ", player + 1, "Wins!")
+                    if running == False:
+                        quit_game = True
+                        fadeout_screen(screen, 255)
+                        return quit_game
                     break 
     #Bug de se a bola branca entrar e o outro jogador mete uma bola sua no buraco depois em vez de jogar again muda
     #Bug de se entrar na pausa e der continuar a bola branca e o taco desaparecem 
@@ -1063,11 +1076,8 @@ def Snooker():
                             pygame.time.delay(100)
                             pass
                         elif option == 2: #restart
-                            Snooker()
+                            Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
                         elif option == 3: #quit
-                            pygame.quit()
-                            running = False
-                        
-                        
-                        
-Snooker()
+                            quit_game = True
+                            fadeout_screen(screen, 255)
+                            return quit_game

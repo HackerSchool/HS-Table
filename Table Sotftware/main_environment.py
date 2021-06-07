@@ -4,6 +4,7 @@ pygame.init()
 
 from subprocess import call
 from tic_tac_toe_main_menu import *
+from Snooker import Snooker
 from assets.Color import *
 from assets.Dimensions import *
 from assets.Fonts import *
@@ -156,7 +157,7 @@ def main_env(fading):
 
         elif env_button(SCREEN, True, 'SNOOKER', SMALL_TEXT, SMALL_BOLD_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[2], 2, 6, click):
             pygame.time.delay(100)
-            #start_game()
+            start_game(Snooker)
 
     pygame.display.update()
 
