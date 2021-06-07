@@ -840,7 +840,8 @@ def win(screen,player,players,who):
                 click = True
         if button(screen,'Y E S',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) - SCREEN_WIDTH//12),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT), click):
             sair = True
-            Snooker() # Dá bug ao tentar sair do jogo depois ao recomeçar
+            #Snooker() # Dá bug ao tentar sair do jogo depois ao recomeçar
+            return True
 
         elif button(screen,'N O',(((SCREEN_WIDTH - BUTTON_WIDTH) // 2) + SCREEN_WIDTH//6),(SCREEN_HEIGHT // 2 + (SCREEN_HEIGHT//11)),(BUTTON_WIDTH - SCREEN_WIDTH//11),(BUTTON_HEIGHT) , click):
             sair = True
@@ -901,7 +902,7 @@ def Snooker():
         #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 50),
         #Ball(TABLE_WIDTH // 5 * 4,3 * TABLE_HEIGHT // 4, BALL_RADIUS, WHITE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
-        #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK, 0, 5) #para testar a bola preta entrar
+        Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK, 0, 5) #para testar a bola preta entrar
         # Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
         # Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED, 50),
     ]
@@ -1028,6 +1029,8 @@ def Snooker():
                     quit_game = True
                     fadeout_screen(screen, 255)
                     return quit_game
+                else:
+                    pass
                 break
     
             if blackin and (players[player].balls == 7):
@@ -1038,6 +1041,8 @@ def Snooker():
                         quit_game = True
                         fadeout_screen(screen, 255)
                         return quit_game
+                    else:
+                        pass
                     break
                 else: #meteu a preta e ganhou!
                     running = win(screen, player, players, "t") 
@@ -1046,6 +1051,8 @@ def Snooker():
                         quit_game = True
                         fadeout_screen(screen, 255)
                         return quit_game
+                    else:
+                        pass
                     break 
     #Bug de se a bola branca entrar e o outro jogador mete uma bola sua no buraco depois em vez de jogar again muda
     #Bug de se entrar na pausa e der continuar a bola branca e o taco desaparecem 
@@ -1076,7 +1083,10 @@ def Snooker():
                             pygame.time.delay(100)
                             pass
                         elif option == 2: #restart
-                            Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
+                            quit_game = Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
+                            if quit_game == True:
+                                fadeout_screen(screen, 255)
+                                return quit_game
                         elif option == 3: #quit
                             quit_game = True
                             fadeout_screen(screen, 255)
