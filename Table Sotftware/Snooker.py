@@ -224,11 +224,10 @@ class taco():
                             break
                         elif option == 2: #restart
                             Snooker()
-                            return
-                        elif option == 3: #quit
-                            pygame.quit()
-                            running = False
-                            return
+                            return "quit"
+                        elif option == 3: #quit----
+                            print("HEREEE")
+                            return "quit"
                             """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
                                 continue """
                     elif Check(balls[0], pos):
@@ -270,11 +269,10 @@ class taco():
                             break
                         elif option == 2: #restart
                             Snooker()
-                            return
-                        elif option == 3: #quit
-                            pygame.quit()
-                            running = False
-                            return
+                            return "quit"
+                        elif option == 3: #quit---
+                            print("HERE")
+                            return "quit"
                             """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
                                 continue """
                     else:
@@ -519,11 +517,9 @@ def bolaBranca(balls, holes, walls, players, player):
                                 break
                             elif option == 2: #restart
                                 Snooker()
-                                return
-                            elif option == 3: #quit
-                                pygame.quit()
-                                running = False
-                                return
+                                return "quit"
+                            elif option == 3: #quit-----
+                                return "quit"
                     if pos[0] <= BORDER_SIZE + BALL_RADIUS:
                         pos[0] = BORDER_SIZE + BALL_RADIUS
                     elif pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS):
@@ -609,7 +605,7 @@ def gotIn(players, player):
         if b.color == RED:
             countR += 1
     
-    #BLUE ------------> 1!
+    #BLUE 
     if countB > countR:
         players[player].color = 0
         players[(player + 1) % 2].color = 1
@@ -710,7 +706,6 @@ def pause(w):
         if button(w,'R E S U M E', *MAIN_BUTTONS_LAYOUT[0], click):
             sair = True
             return 1
-            break
         elif button(w,'R E S T A R T', *MAIN_BUTTONS_LAYOUT[1], click):
             sair = True
             return 2
@@ -897,15 +892,15 @@ def Snooker():
     ]
 
     # ponham aqui as bolas para testar coisas
-    balls += [
+    """ balls += [
         #Ball(10 *TABLE_WIDTH // 11 - 10, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 0),
         #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 50),
         #Ball(TABLE_WIDTH // 5 * 4,3 * TABLE_HEIGHT // 4, BALL_RADIUS, WHITE),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
-        Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK, 0, 5) #para testar a bola preta entrar
+        #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK, 0, 5) #para testar a bola preta entrar
         # Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
         # Ball(10 *TABLE_WIDTH // 11, TABLE_HEIGHT // 2 + 2 * (BALL_RADIUS + 1), BALL_RADIUS, RED, 50),
-    ]
+    ] """
     
     balls_in_hole = []
     
@@ -949,7 +944,11 @@ def Snooker():
         if first:
             first = 0
             print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
-            stick.move(balls, holes, walls, players, player)
+            temp = stick.move(balls, holes, walls, players, player)
+            if temp == "quit":
+                quit_game = True
+                fadeout_screen(screen, 255)
+                return quit_game
             continue
 
     
@@ -1054,10 +1053,13 @@ def Snooker():
                     else:
                         pass
                     break 
-    #Bug de se a bola branca entrar e o outro jogador mete uma bola sua no buraco depois em vez de jogar again muda
-    #Bug de se entrar na pausa e der continuar a bola branca e o taco desaparecem 
-            if bolaBranca(balls, holes, walls, players, player): #remove a ball from current player
-                removeBall(players, player, balls)           
+            temp = bolaBranca(balls, holes, walls, players, player)
+            if temp: #remove a ball from current player
+                removeBall(players, player, balls) 
+            elif temp == "quit":
+                quit_game = True
+                fadeout_screen(screen, 255)
+                return quit_game
                 
             idk = gotIn(players, player) 
             if not idk: #no ball got in (changes players)
@@ -1066,7 +1068,11 @@ def Snooker():
                     player = 0
             #print(player + 1) #currently this player is moving
             print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
-            stick.move(balls, holes, walls, players, player)
+            temp = stick.move(balls, holes, walls, players, player)
+            if temp == "quit":
+                quit_game = True
+                fadeout_screen(screen, 255)
+                return quit_game
             
             
     

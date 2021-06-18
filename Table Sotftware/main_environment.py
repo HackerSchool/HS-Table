@@ -47,6 +47,7 @@ def turnoff_system_menu(turnoff_system):
 
             if env_button(SCREEN, False, 'Y E S', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
                 pygame.time.delay(100)
+                pygame.quit()
                 #call("sudo shutdown -h now", shell = True) #Raspberry pi
 
             elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
