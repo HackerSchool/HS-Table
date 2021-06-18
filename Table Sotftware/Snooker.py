@@ -81,7 +81,7 @@ class Border():
         normal_y /= dist
 
         if dist <= ball.radius:
-            print("here")
+            #print("here")
 
             # rotate axis
             vel_x = normal_y * ball.vel_x - normal_x * ball.vel_y
@@ -205,7 +205,7 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem na pausa                        
                         option = pause(screen)
                         if option == 1: #return
                             pygame.time.delay(100)
@@ -225,11 +225,26 @@ class taco():
                         elif option == 2: #restart
                             Snooker()
                             return "quit"
-                        elif option == 3: #quit----
-                            print("HEREEE")
+                        elif option == 3: #quit
                             return "quit"
-                            """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
-                                continue """
+                    
+                    elif (first and pos[0] > (9.5*SCREEN_WIDTH//10) - SCREEN_WIDTH//70) and (pos[0] < (9.5*SCREEN_WIDTH//10) + SCREEN_WIDTH // 60) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//11))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem no ?
+                        about(screen)
+                        pygame.time.delay(100)
+                        screen.fill(DARK_GREEN)  
+                        for hole in holes:
+                            hole.Render()
+
+                        for b in balls:
+                            b.Render()
+
+                        for wall in walls:
+                            wall.Render()
+                        drawMove(screen,players,player) 
+
+                        pygame.display.flip()
+                        break
+
                     elif Check(balls[0], pos):
                             continue
                     else:
@@ -250,7 +265,7 @@ class taco():
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))): #se clicarem na pausa                        
+                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem na pausa                        
                         option = pause(screen)
                         if option == 1: #return
                             pygame.time.delay(100)
@@ -263,18 +278,33 @@ class taco():
 
                             for wall in walls:
                                 wall.Render()
-                            drawWhite(screen,players,player) 
+                            drawMove(screen,players,player) 
 
                             pygame.display.flip()
                             break
                         elif option == 2: #restart
                             Snooker()
                             return "quit"
-                        elif option == 3: #quit---
-                            print("HERE")
+                        elif option == 3: #quit
                             return "quit"
-                            """ elif pos[0] <= BORDER_SIZE + BALL_RADIUS or pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS) or pos[1] <= BORDER_SIZE + BALL_RADIUS or pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
-                                continue """
+
+                    elif (first and pos[0] > (9.5*SCREEN_WIDTH//10) - SCREEN_WIDTH//70) and (pos[0] < (9.5*SCREEN_WIDTH//10) + SCREEN_WIDTH // 60) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//11))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem no ?
+                        about(screen)
+                        pygame.time.delay(100)
+                        screen.fill(DARK_GREEN)  
+                        for hole in holes:
+                            hole.Render()
+
+                        for b in balls:
+                            b.Render()
+
+                        for wall in walls:
+                            wall.Render()
+                        drawMove(screen,players,player) 
+
+                        pygame.display.flip()
+                        break
+
                     else:
                         self.erase(holes, balls, walls, players, player)
                         aux, pos = self.render2(pos, balls)
@@ -495,60 +525,79 @@ def bolaBranca(balls, holes, walls, players, player):
             for event in pygame.event.get():                              
                 if pygame.mouse.get_pressed()[0]:
                     pos = list(event.pos)
-                    if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5): #se clicarem na pausa
-                        if (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//30))):
-                            option = pause(screen)
-                            if option == 1: #return
-                                pygame.time.delay(100)
-                                screen.fill(DARK_GREEN)  
-                                for hole in holes:
-                                    hole.Render()
+                    
+                    if (first and pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem na pausa
+                        option = pause(screen)
+                        if option == 1: #return
+                            pygame.time.delay(100)
+                            screen.fill(DARK_GREEN)  
+                            for hole in holes:
+                                hole.Render()
 
-                                for b in balls:
-                                    if b == balls[0]:
-                                        continue
-                                    b.Render()
+                            for b in balls:
+                                if b == balls[0] and b.color == WHITE:
+                                    continue
+                                b.Render()
 
-                                for wall in walls:
-                                    wall.Render()
-                                drawWhite(screen,players,player) 
+                            for wall in walls:
+                                wall.Render()
+                            drawWhite(screen,players,player) 
 
-                                pygame.display.flip()
-                                break
-                            elif option == 2: #restart
-                                Snooker()
-                                return "quit"
-                            elif option == 3: #quit-----
-                                return "quit"
-                    if pos[0] <= BORDER_SIZE + BALL_RADIUS:
-                        pos[0] = BORDER_SIZE + BALL_RADIUS
-                    elif pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS):
-                        pos[0] = TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS)
-                    if pos[1] <= BORDER_SIZE + BALL_RADIUS:
-                        pos[1] = BORDER_SIZE + BALL_RADIUS
-                    elif pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
-                        pos[1] = TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS)
-                    if first:
-                        first = 0
-                        balls.insert(0, Ball(pos[0], pos[1], BALL_RADIUS, WHITE))
+                            pygame.display.flip()
+                            break
+                        elif option == 2: #restart
+                            Snooker()
+                            return "quit"
+                        elif option == 3: #quit
+                            return "quit"
+                    
+                    elif (first and pos[0] > (9.5*SCREEN_WIDTH//10) - SCREEN_WIDTH//70) and (pos[0] < (9.5*SCREEN_WIDTH//10) + SCREEN_WIDTH // 60) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//11))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem no ?
+                        about(screen)
+                        pygame.time.delay(100)
+                        screen.fill(DARK_GREEN)  
+                        for hole in holes:
+                            hole.Render()
 
-                    balls[0].x = pos[0]
-                    balls[0].y = pos[1]
-                    balls[0].Render()
-                    pygame.display.flip()
-                    pygame.time.delay(15)
-                    screen.fill(DARK_GREEN)    
-                    for hole in holes:
-                        hole.Render()
+                        for b in balls:
+                            b.Render()
 
-                    for b in balls:
-                        if b == balls[0]:
-                            continue
-                        b.Render()
+                        for wall in walls:
+                            wall.Render()
+                        drawMove(screen,players,player) 
 
-                    for wall in walls:
-                        wall.Render()
-                    drawWhite(screen,players,player)
+                        pygame.display.flip()
+                        break
+                    
+                    else:
+                        if pos[0] <= BORDER_SIZE + BALL_RADIUS:
+                            pos[0] = BORDER_SIZE + BALL_RADIUS
+                        elif pos[0] > TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS):
+                            pos[0] = TABLE_WIDTH - (BORDER_SIZE + BALL_RADIUS)
+                        if pos[1] <= BORDER_SIZE + BALL_RADIUS:
+                            pos[1] = BORDER_SIZE + BALL_RADIUS
+                        elif pos[1] > TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS):
+                            pos[1] = TABLE_HEIGHT - (BORDER_SIZE + BALL_RADIUS)
+                        if first:
+                            first = 0
+                            balls.insert(0, Ball(pos[0], pos[1], BALL_RADIUS, WHITE))
+
+                        balls[0].x = pos[0]
+                        balls[0].y = pos[1]
+                        balls[0].Render()
+                        pygame.display.flip()
+                        pygame.time.delay(15)
+                        screen.fill(DARK_GREEN)    
+                        for hole in holes:
+                            hole.Render()
+
+                        for b in balls:
+                            if b == balls[0]:
+                                continue
+                            b.Render()
+
+                        for wall in walls:
+                            wall.Render()
+                        drawWhite(screen,players,player)
                 elif not first:
                     flag = 0
                     for b in balls:
@@ -567,6 +616,7 @@ def bolaBranca(balls, holes, walls, players, player):
                         b = 0
                         break
                     else:
+                        first = 1
                         pygame.display.flip()
 
         balls[0].Render()
@@ -712,6 +762,151 @@ def pause(w):
         elif button(w,'Q U I T', *MAIN_BUTTONS_LAYOUT[2], click):
             sair = True
             return 3
+
+
+def about(w):
+    s = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))        
+    s.set_alpha(1000)              
+    s.fill((20,20,20))
+
+    pygame.display.update()
+    w.blit(s, (0,0))
+    #LARGE_TEXT
+    #ABOUT
+    text = LARGE_MIDDLE_TEXT.render("ABOUT", True, DARK_GREEN)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2,SCREEN_HEIGHT // 14)
+    w.blit(text, textRect)
+
+
+    #Gameplay
+    text = LARGER_TEXT.render("Gameplay", True, DARK_GREEN)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 15,1.2*SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+
+
+    text = WRITTING_FONT.render("Stick:", True, DARK_GREEN)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 26.5, 1.55 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+
+    text = WRITTING_FONT.render("While dragging the finger through the screen you can first choose the direction of the stick.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3.24, 1.85*SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("After lifting the finger the direction is set and can no longer be changed.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 4.03, 2.05 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("Now it's time to hit the ball. For this you need to move the finger in its direction (the finger doesn't need to be on top of the stick).", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.33, 2.25 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("The faster the movement the more speed the ball gains after the collision.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3.933, 2.45 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+    text = WRITTING_FONT.render("White ball:", True, DARK_GREEN)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 18.5, 2.75 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+    text = WRITTING_FONT.render("After one player puts the white ball in the hole the other can now choose the position of the ball.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3.07, 3.05 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("For this you need to move your finger in the screen until you find the most advantageouse position.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3, 3.25 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("The position is set and can no longer be changed after the finger is lifted.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 4, 3.45 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render(" If the position of the ball when the finger is lifted is not available the player needs to choose a new position with the same process.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.32, 3.65 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("Both buttons (pause and question mark) can be pressed at all times.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 4.232, 3.95 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+
+    text = LARGER_TEXT.render("Rules", True, DARK_GREEN)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 22, 4.45 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+
+    text = WRITTING_FONT.render("If the player who put the white ball in the hole had already balls in holes one of them needs to be removed back to the table (specific position).", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.123, 4.8 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    
+
+    text = WRITTING_FONT.render("In the beggining of the game no player has a set color.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 5.18, 5.1 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("This color is set automatically when a player puts for the first time a none white and none black ball in a hole.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.74, 5.3 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    
+
+    text = WRITTING_FONT.render("First player to put all the balls of one color plus the black one wins.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 4.35, 5.6 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("If there's only the black ball left for a speciffic and a player puts both the black and the white ball in a hole the other player wins.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.352, 5.8 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("If a player puts the black ball with still balls of his color on the board the other player wins.", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3.282, 6 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("Usually if a player with color (A) hits the white ball and the white ball doesn't hit an (A) colored ball first, it counts as a penalty (same as when someone", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2.023, 6.2 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    text = WRITTING_FONT.render("puts the white ball in). HOWEVER, because we know you suck, this rule doesn't exist!", True, WHITE)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 3.535, 6.4 * SCREEN_HEIGHT // 8)
+    w.blit(text, textRect)
+
+    
+
+    while True:
+        pygame.display.update()            
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                return
+
         
 #(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2)
 def drawMove(screen, players, player):
@@ -727,10 +922,18 @@ def drawMove(screen, players, player):
     else:
         text_b = "Player " + str(player + 1) + " (No color yet), it's time to move!"
 
+    text_a = "?"
+
+    string_a = LARGE_MIDDLE_TEXT.render(text_a, True, WHITE)
+
     string_b = SMALL_FONT.render(text_b,True,WHITE)
     string_br = string_b.get_rect()
     string_br.center = ((SCREEN_WIDTH//2),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
     screen.blit(string_b,string_br)
+    string_br = string_a.get_rect()
+    string_br.center = ((9.5*SCREEN_WIDTH//10),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
+
+    screen.blit(string_a,string_br)
 
 def drawWhite(screen, players, player):
     pygame.draw.rect(screen, GREY, (0, int(TABLE_HEIGHT), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
@@ -745,10 +948,17 @@ def drawWhite(screen, players, player):
     else:
         text_b = "Choose a spot for the white ball Player " + str((player + 1) % 2 + 1)
 
-    string_b = SMALL_FONT.render(text_b,True,WHITE)
+    text_a = "?"
+
+    string_a = LARGE_MIDDLE_TEXT.render(text_a, True, WHITE)
+    string_b = SMALL_FONT.render(text_b, True, WHITE)
     string_br = string_b.get_rect()
     string_br.center = ((SCREEN_WIDTH//2),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
     screen.blit(string_b,string_br)
+    string_br = string_a.get_rect()
+    string_br.center = ((9.5*SCREEN_WIDTH//10),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
+
+    screen.blit(string_a,string_br)
 
 def draw(screen, players, player):
     pygame.draw.rect(screen, GREY, (0, int(TABLE_HEIGHT), int(SCREEN_WIDTH), int(SCREEN_HEIGHT)))
@@ -775,7 +985,9 @@ def draw(screen, players, player):
     else:
         text_b = "Player 1 (No color): 0"
         text_r = "Player 2 (No color): 0"
+    
 
+    
     string_b = SMALL_FONT.render(str(text_b),True,WHITE)
     string_r = SMALL_FONT.render(str(text_r),True,WHITE)
     
@@ -787,6 +999,15 @@ def draw(screen, players, player):
     
     screen.blit(string_b,string_br)
     screen.blit(string_r,string_rr)
+
+    text_a = "?"
+
+    string_a = LARGE_MIDDLE_TEXT.render(str(text_a), True, WHITE)
+    string_br = string_a.get_rect()
+    string_br.center = ((9.5*SCREEN_WIDTH//10),(SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2))
+
+    screen.blit(string_a,string_br)
+
     
 def win(screen,player,players,who):
     
@@ -867,8 +1088,9 @@ def Snooker():
         ]
     
     balls = [
+        Ball(TABLE_WIDTH // 2,TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 5),
         # bola branca
-        Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
+        #Ball(TABLE_WIDTH // 5, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE),
         # primeira coluna
         Ball(10 *TABLE_WIDTH // 11 - 8 * BALL_RADIUS, TABLE_HEIGHT // 2, BALL_RADIUS, RED),
         # segunda coluna
@@ -895,7 +1117,7 @@ def Snooker():
     """ balls += [
         #Ball(10 *TABLE_WIDTH // 11 - 10, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 0, 0),
         #Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 50),
-        #Ball(TABLE_WIDTH // 5 * 4,3 * TABLE_HEIGHT // 4, BALL_RADIUS, WHITE),
+        #Ball(TABLE_WIDTH // 2,TABLE_HEIGHT // 2, BALL_RADIUS, WHITE, 5),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4 + 65, BALL_RADIUS, RED),
         #Ball(TABLE_WIDTH // 2, 3 * TABLE_HEIGHT // 4, BALL_RADIUS, LIGHT_BLACK, 0, 5) #para testar a bola preta entrar
         # Ball(TABLE_WIDTH // 2, TABLE_HEIGHT // 4, BALL_RADIUS, BLUE),
@@ -941,15 +1163,15 @@ def Snooker():
     
         balls_to_remove = []
 
-        if first:
+        """ if first:
             first = 0
-            print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
+            #print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
             temp = stick.move(balls, holes, walls, players, player)
             if temp == "quit":
                 quit_game = True
                 fadeout_screen(screen, 255)
                 return quit_game
-            continue
+            continue """
 
     
         for i in range(0, len(balls)):
@@ -1023,7 +1245,7 @@ def Snooker():
     
             if blackin and (players[player].balls < 7): #black gone before its time..
                 running = win(screen,player,players, "o")
-                print("Player ", (player + 1) % 2 + 1, "Wins!")
+                #print("Player ", (player + 1) % 2 + 1, "Wins!")
                 if running == False:
                     quit_game = True
                     fadeout_screen(screen, 255)
@@ -1035,7 +1257,7 @@ def Snooker():
             if blackin and (players[player].balls == 7):
                 if balls[0].color != WHITE: #meteu a preta e a branca...
                     running = win(screen, player,players, "o")
-                    print("Player ", (player + 1) % 2 + 1, "Wins!")
+                    #print("Player ", (player + 1) % 2 + 1, "Wins!")
                     if running == False:
                         quit_game = True
                         fadeout_screen(screen, 255)
@@ -1045,7 +1267,7 @@ def Snooker():
                     break
                 else: #meteu a preta e ganhou!
                     running = win(screen, player, players, "t") 
-                    print("Player ", player + 1, "Wins!")
+                    #print("Player ", player + 1, "Wins!")
                     if running == False:
                         quit_game = True
                         fadeout_screen(screen, 255)
@@ -1067,7 +1289,7 @@ def Snooker():
                 if player == 2:
                     player = 0
             #print(player + 1) #currently this player is moving
-            print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
+            #print("player: ",player + 1,"|\tcolor (1 -> blue, 0 -> red): ",  players[player].color,"|\tnumber of balls in holes: ", players[player].balls)
             temp = stick.move(balls, holes, walls, players, player)
             if temp == "quit":
                 quit_game = True
@@ -1082,18 +1304,33 @@ def Snooker():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                if (pos[0] > ((SCREEN_WIDTH//30)-(TABLE_WIDTH // 120))) and (pos[0] < ((SCREEN_WIDTH//19)+(TABLE_WIDTH // 120))): #se clicarem na pausa
-                    if (pos[1] > ((SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) - TABLE_HEIGHT // 30)) and (pos[1] < ((SCREEN_HEIGHT - (SCREEN_HEIGHT - TABLE_HEIGHT - TABLE_HEIGHT / 70) // 2) + TABLE_HEIGHT // 30)):
-                        option = pause(screen)
-                        if option == 1: #return
-                            pygame.time.delay(100)
-                            pass
-                        elif option == 2: #restart
-                            quit_game = Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
-                            if quit_game == True:
-                                fadeout_screen(screen, 255)
-                                return quit_game
-                        elif option == 3: #quit
-                            quit_game = True
+                if (pos[0] > (SCREEN_WIDTH//30)-5) and (pos[0] < (SCREEN_WIDTH//19)+5) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//12))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem na pausa
+                    option = pause(screen)
+                    if option == 1: #return
+                        pygame.time.delay(100)
+                        pass
+                    elif option == 2: #restart
+                        quit_game = Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
+                        if quit_game == True:
                             fadeout_screen(screen, 255)
                             return quit_game
+                    elif option == 3: #quit
+                        quit_game = True
+                        fadeout_screen(screen, 255)
+                        return quit_game
+                elif (pos[0] > (9.5*SCREEN_WIDTH//10) - SCREEN_WIDTH//70) and (pos[0] < (9.5*SCREEN_WIDTH//10) + SCREEN_WIDTH // 60) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//11))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem no ?
+                    about(screen)
+                    pygame.time.delay(100)
+                    screen.fill(DARK_GREEN)  
+                    for hole in holes:
+                        hole.Render()
+
+                    for b in balls:
+                        b.Render()
+
+                    for wall in walls:
+                        wall.Render()
+                    drawMove(screen,players,player) 
+
+                    pygame.display.flip()
+                    break
