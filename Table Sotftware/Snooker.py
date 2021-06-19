@@ -513,7 +513,6 @@ def stoped(balls):
     return 1
 
 def bolaBranca(balls, holes, walls, players, player):
-    a = 0
     b = 1
     if len(balls) == 16:
         return 0
@@ -1272,11 +1271,11 @@ def Snooker():
                         pass
                     break 
             temp = bolaBranca(balls, holes, walls, players, player)
-            if temp: #remove a ball from current player
-                removeBall(players, player, balls) 
-            elif temp == "quit":
+            if temp == "quit":
                 quit_game = True
                 return quit_game
+            elif temp: #remove a ball from current player
+                removeBall(players, player, balls) 
                 
             idk = gotIn(players, player) 
             if not idk: #no ball got in (changes players)
