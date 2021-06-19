@@ -126,6 +126,7 @@ def main_env(fading):
         while playing:
             quit_game = game()
             if quit_game == True:
+                fadeout_screen(SCREEN, 255)
                 break
         main_env(False)
 

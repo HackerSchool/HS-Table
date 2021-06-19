@@ -1169,7 +1169,6 @@ def Snooker():
             temp = stick.move(balls, holes, walls, players, player)
             if temp == "quit":
                 quit_game = True
-                fadeout_screen(screen, 255)
                 return quit_game
             continue """
 
@@ -1248,7 +1247,6 @@ def Snooker():
                 #print("Player ", (player + 1) % 2 + 1, "Wins!")
                 if running == False:
                     quit_game = True
-                    fadeout_screen(screen, 255)
                     return quit_game
                 else:
                     pass
@@ -1260,7 +1258,6 @@ def Snooker():
                     #print("Player ", (player + 1) % 2 + 1, "Wins!")
                     if running == False:
                         quit_game = True
-                        fadeout_screen(screen, 255)
                         return quit_game
                     else:
                         pass
@@ -1270,7 +1267,6 @@ def Snooker():
                     #print("Player ", player + 1, "Wins!")
                     if running == False:
                         quit_game = True
-                        fadeout_screen(screen, 255)
                         return quit_game
                     else:
                         pass
@@ -1280,7 +1276,6 @@ def Snooker():
                 removeBall(players, player, balls) 
             elif temp == "quit":
                 quit_game = True
-                fadeout_screen(screen, 255)
                 return quit_game
                 
             idk = gotIn(players, player) 
@@ -1293,7 +1288,6 @@ def Snooker():
             temp = stick.move(balls, holes, walls, players, player)
             if temp == "quit":
                 quit_game = True
-                fadeout_screen(screen, 255)
                 return quit_game
             
             
@@ -1312,11 +1306,9 @@ def Snooker():
                     elif option == 2: #restart
                         quit_game = Snooker() # Dá bug ao tentar sair do jogo depois de recomeçar
                         if quit_game == True:
-                            fadeout_screen(screen, 255)
                             return quit_game
                     elif option == 3: #quit
                         quit_game = True
-                        fadeout_screen(screen, 255)
                         return quit_game
                 elif (pos[0] > (9.5*SCREEN_WIDTH//10) - SCREEN_WIDTH//70) and (pos[0] < (9.5*SCREEN_WIDTH//10) + SCREEN_WIDTH // 60) and (pos[1] > (SCREEN_HEIGHT-(SCREEN_HEIGHT//11))) and (pos[1] < (SCREEN_HEIGHT - (SCREEN_HEIGHT//55))): #se clicarem no ?
                     about(screen)
