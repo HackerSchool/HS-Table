@@ -51,7 +51,7 @@ def write_settings(name, x_position, y_position):
     SCREEN.blit(text_surf, text_rectangle)
 
 def changes_done():
-    fadeout_screen(SCREEN, 255)
+    fadeout_screen(SCREEN)
     dots = ['.', '..', '...']
     repeat = 2
     for dot in dots * repeat:
@@ -90,7 +90,7 @@ def galo_bot_settings_menu():
 
         # Bot difficulty
         if button(SCREEN,' - ', *CHOOSE_SET_BUTTONS_LAYOUT[6], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if difficulty == 'E A S Y':
                 num_diff = 0
             elif difficulty == 'M E D I U M':
@@ -103,7 +103,7 @@ def galo_bot_settings_menu():
             choose_settings(settings_display, 1.5, 1)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[7], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if difficulty == 'E A S Y':
                 difficulty = 'M E D I U M'
                 num_diff = 1
@@ -117,7 +117,7 @@ def galo_bot_settings_menu():
 
         # Number of bot players
         if button(SCREEN,' - ', *CHOOSE_SET_BUTTONS_LAYOUT[8], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_bots > NPLAYERS or num_bots <= 1:
                 pass
             elif num_bots < NPLAYERS:
@@ -126,7 +126,7 @@ def galo_bot_settings_menu():
             choose_settings(settings_display, 1.5, 1)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[9], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_bots >= NPLAYERS - 1:
                 pass
             elif num_bots < NPLAYERS - 1 or num_bots <= 1:
@@ -135,7 +135,7 @@ def galo_bot_settings_menu():
             choose_settings(settings_display, 1.5, 1)
 
         if button(SCREEN,'C O N F I R M ', *CHOOSE_SET_BUTTONS_LAYOUT[12], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             BOT_DIFF = int(num_diff)
             NBOTS = int(num_bots)
             playgame = True
@@ -143,7 +143,7 @@ def galo_bot_settings_menu():
             return BOT_DIFF, NBOTS, playgame
 
         elif button(SCREEN,'R E T U R N', *CHOOSE_SET_BUTTONS_LAYOUT[13], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             playgame = False
             return BOT_DIFF, NBOTS, playgame
     
@@ -179,7 +179,7 @@ def galo_general_settings_menu(bot_settings):
 
         # Number of players
         if button(SCREEN,' - ', *CHOOSE_SET_BUTTONS_LAYOUT[0], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_players <= 2:
                 pass
             elif num_players > 1:
@@ -188,7 +188,7 @@ def galo_general_settings_menu(bot_settings):
             choose_settings(settings_display, 1.2, 1)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[1], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_players >= 9:
                 pass
             elif num_players < 9:
@@ -198,7 +198,7 @@ def galo_general_settings_menu(bot_settings):
 
         # Number of rounds
         if button(SCREEN,' - ', *CHOOSE_SET_BUTTONS_LAYOUT[2], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_rounds <= 1:
                 pass
             elif num_rounds > 1:
@@ -207,14 +207,14 @@ def galo_general_settings_menu(bot_settings):
             choose_settings(settings_display, 1.2, 1)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[3], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             num_rounds += 1
             settings_display[1] = num_rounds
             choose_settings(settings_display, 1.2, 1)
 
         # Board size
         if button(SCREEN,' - ', *CHOOSE_SET_BUTTONS_LAYOUT[4], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             if num_board <= 3:
                 pass
             elif num_board > 3:
@@ -223,14 +223,14 @@ def galo_general_settings_menu(bot_settings):
             choose_settings(settings_display, 1.2, 1)
 
         elif button(SCREEN,' + ', *CHOOSE_SET_BUTTONS_LAYOUT[5], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             num_board += 1
             settings_display[2] = num_board
             choose_settings(settings_display, 1.2, 1)
 
         if bot_settings == True:
             if button(SCREEN, 'N E X T', *CHOOSE_SET_BUTTONS_LAYOUT[10], click):
-                pygame.time.delay(100)
+                #pygame.time.delay(100)
                 global BOT_DIFF
                 global NBOTS
                 NPLAYERS = int(num_players)
@@ -245,7 +245,7 @@ def galo_general_settings_menu(bot_settings):
                     return NPLAYERS, NROUNDS, BOARDSIZE, playgame
         else:
             if button(SCREEN, 'C O N F I R M', *CHOOSE_SET_BUTTONS_LAYOUT[10], click):
-                pygame.time.delay(100)
+                #pygame.time.delay(100)
                 NPLAYERS = int(num_players)
                 NROUNDS = int(num_rounds)
                 BOARDSIZE = int(num_board)
@@ -254,7 +254,7 @@ def galo_general_settings_menu(bot_settings):
                 return NPLAYERS, NROUNDS, BOARDSIZE, playgame
 
         if button(SCREEN,'R E T U R N', *CHOOSE_SET_BUTTONS_LAYOUT[11], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             playgame = False
             return NPLAYERS, NROUNDS, BOARDSIZE, playgame
     
@@ -290,7 +290,7 @@ def galo_main_menu():
                 click = True
         
         if button(SCREEN,'P L A Y E R S  V S  P L A Y E R S', *MAIN_MENU_BUTTONS_LAYOUT[0], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             NPLAYERS, NROUNDS, BOARDSIZE, playgame = galo_general_settings_menu(False)
             if playgame == False:
                 NPLAYERS = 2
@@ -312,7 +312,7 @@ def galo_main_menu():
             mainmenu = False
 
         elif button(SCREEN,'P L A Y E R S  V S  B O T S', *MAIN_MENU_BUTTONS_LAYOUT[1], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             NPLAYERS, NROUNDS, BOARDSIZE, playgame = galo_general_settings_menu(True)
             if playgame == False:
                 NPLAYERS = 2
@@ -334,7 +334,7 @@ def galo_main_menu():
             mainmenu = False
 
         elif button(SCREEN,'Q U I T   G A M E', *MAIN_MENU_BUTTONS_LAYOUT[2], click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             #Default variable names (cada vez que se inicia o jogo as variáveis terão sempre os valores default)
             NPLAYERS = 2
             BOARDSIZE = 3
@@ -342,7 +342,7 @@ def galo_main_menu():
             BOT_DIFF = 0
             NBOTS = 1
             quit_game = True
-            fadeout_screen(SCREEN, 255)
+            fadeout_screen(SCREEN)
             return quit_game
 
         pygame.display.update()

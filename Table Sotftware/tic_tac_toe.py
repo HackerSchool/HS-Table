@@ -5,6 +5,7 @@ from math import *
 from assets.Color import *
 from assets.buttons_and_text import *
 from assets.Dimensions import *
+from assets.fade import fadein_galo
 
 pygame.init()
 
@@ -19,11 +20,8 @@ s.fill((20,20,20))
 
 
 
-def makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,PLAYERS,wins):
+def makescreen(screen, BOARDSIZE, dist, xo, yo, RONDAS, r, PLAYERS, wins):
     """ Inicializa o screen com a grade de jogo e as rondas"""
-    
-    screen = pygame.display.set_mode((LARGURA,ALTURA))
-    pygame.display.set_caption ("Jogo do Galo")
     screen.fill(LIGHT_BLACK)
     
     pygame.draw.line (screen, WHITE, ((LARGURA//19),(ALTURA//25)), ((LARGURA//19),(ALTURA//10)),10) #pause button
@@ -478,6 +476,9 @@ def pause(w,s):
     
 def galo(NPLAYERS,BOARDSIZE,RONDAS):
 
+    screen = pygame.display.set_mode((LARGURA,ALTURA))
+    pygame.display.set_caption ("Jogo do Galo")
+
     winner = []
     for i in range(NPLAYERS): #initialize vector with number of wins for each player
         winner.append(0)
@@ -494,6 +495,8 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
 
     # game loop
     sair = False
+
+    fadein_galo(screen, BOARDSIZE, dist, xo, yo, RONDAS, 0, NPLAYERS, winner, LARGURA, ALTURA)
     
     for r in range(RONDAS):
         
@@ -503,7 +506,7 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
             Board.append([-1 for i in range(BOARDSIZE)])
             
         player = r % NPLAYERS
-        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,NPLAYERS,winner) #cria a janela de jogo
+        w = makescreen(screen, BOARDSIZE, dist, xo, yo, RONDAS, r, NPLAYERS, winner) #cria a janela de jogo
         
         while not sair:
             pygame.display.update()
@@ -550,6 +553,9 @@ def galo(NPLAYERS,BOARDSIZE,RONDAS):
 
 def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
 
+    screen = pygame.display.set_mode((LARGURA,ALTURA))
+    pygame.display.set_caption ("Jogo do Galo")
+
     winner = []
     for i in range(NPLAYERS): #initialize vector with number of wins for each player
         winner.append(0)
@@ -568,6 +574,8 @@ def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
 
     # game loop
     sair = False
+
+    fadein_galo(screen, BOARDSIZE, dist, xo, yo, RONDAS, 0, NPLAYERS, winner, LARGURA, ALTURA)
     
     for r in range(RONDAS):
         
@@ -577,7 +585,7 @@ def galo_BOT(NPLAYERS, BOARDSIZE, RONDAS, dificulty, NBOTS):
             Board.append([-1 for i in range(BOARDSIZE)])
             
         player = r % NPLAYERS
-        w = makescreen(BOARDSIZE,dist,xo,yo,RONDAS,r,NPLAYERS,winner) #cria a janela de jogo
+        w = makescreen(screen, BOARDSIZE, dist, xo, yo, RONDAS, r, NPLAYERS, winner) #cria a janela de jogo
         
         while not sair:
             pygame.display.update()    

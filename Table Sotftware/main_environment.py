@@ -4,7 +4,7 @@ pygame.init()
 
 from subprocess import call
 from tic_tac_toe_main_menu import *
-from Snooker import Snooker
+from Snooker_main_menu import *
 from assets.Color import *
 from assets.Dimensions import *
 from assets.Fonts import *
@@ -121,12 +121,12 @@ def main_env(fading):
     pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.76), int(SCREEN_HEIGHT * 0.9 - 2.5), int(SCREEN_WIDTH // 4.2), int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.90)), 1)
 
     def start_game(game):
-        fadeout_screen(SCREEN, 255)
+        fadeout_screen(SCREEN)
         playing = True
         while playing:
             quit_game = game()
             if quit_game == True:
-                fadeout_screen(SCREEN, 255)
+                fadeout_screen(SCREEN)
                 break
         main_env(False)
 
@@ -150,16 +150,16 @@ def main_env(fading):
                 click = True
 
         if env_button(SCREEN, False, 'H', HS_TEXT, HS_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[0], 2, 2, click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             env_settings_menu()
 
         elif env_button(SCREEN, True, 'TIC TAC TOE', SMALL_TEXT, SMALL_BOLD_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[1], 2, 6, click):
-            pygame.time.delay(100)
+            #pygame.time.delay(100)
             start_game(galo_main_menu)
 
         elif env_button(SCREEN, True, 'SNOOKER', SMALL_TEXT, SMALL_BOLD_TEXT, *MAIN_ENV_BUTTONS_LAYOUT[2], 2, 6, click):
-            pygame.time.delay(100)
-            start_game(Snooker)
+            #pygame.time.delay(100)
+            start_game(snooker_main_menu)
 
     pygame.display.update()
 
