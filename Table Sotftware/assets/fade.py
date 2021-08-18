@@ -38,8 +38,19 @@ def draw(screen, TABLE_HEIGHT, TABLE_WIDTH):
 def fadeout_screen(SCREEN):
     fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     fade.fill(BLACK)
-    for i in range(0, 200, 2):
+    for i in range(0, 255, 2):
         fade.set_alpha(i)
+        SCREEN.blit(fade, (0, 0))
+        pygame.display.flip()
+        pygame.time.delay(10)
+
+def fadein_screen(SCREEN):
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    fade.fill(BLACK)
+    BACKGROUND_IMAGE = pygame.image.load("./assets/images/Logo_HS_Table.png").convert_alpha()
+    for i in range(0, 255, 2):
+        fade.set_alpha(255 - i)
+        SCREEN.blit(BACKGROUND_IMAGE, [0,0])
         SCREEN.blit(fade, (0, 0))
         pygame.display.flip()
         pygame.time.delay(10)

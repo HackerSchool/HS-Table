@@ -52,7 +52,7 @@ def turnoff_system_menu(turnoff_system):
 
             elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
                 pygame.time.delay(100)
-                main_env(False)
+                main_env()
 
         elif turnoff_system == 'Restart':
             setup_turnoff_system_menu(turnoff_system)
@@ -63,14 +63,14 @@ def turnoff_system_menu(turnoff_system):
 
             elif env_button(SCREEN, False, 'N O', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *QUESTION_ENV_BUTTONS_LAYOUT[1], 2, 2, click):
                 pygame.time.delay(100)
-                main_env(False)
+                main_env()
 
         pygame.display.update()
 
 
 #SETTINGS MENU
 def env_settings_menu():
-    display_background(SCREEN, True, False, 15)
+    display_background(SCREEN, False, True, 122)
 
     settingsmenu = True
     while settingsmenu:
@@ -92,7 +92,7 @@ def env_settings_menu():
 
         elif env_button(SCREEN, False, 'R E T U R N', MEDIUM_TEXT, MEDIUM_BOLD_TEXT, *SETTINGS_ENV_BUTTONS_LAYOUT[2], 2, 2, click):
             pygame.time.delay(100)
-            main_env(False)
+            main_env()
 
     pygame.display.update()
 
@@ -116,7 +116,7 @@ def date_and_time():
 
 #MAIN ENVIRONMENT
 aux, itstime = 0, 0
-def main_env(fading):
+def main_env():
     display_background(SCREEN, False, False, 0)
     pygame.draw.rect(SCREEN, LIGHT_GREEN, (int(SCREEN_WIDTH * 0.76), int(SCREEN_HEIGHT * 0.9 - 2.5), int(SCREEN_WIDTH // 4.2), int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.90)), 1)
 
@@ -128,7 +128,7 @@ def main_env(fading):
             if quit_game == True:
                 fadeout_screen(SCREEN)
                 break
-        main_env(False)
+        main_env()
 
     envmenu = True
     prev = time()
@@ -164,7 +164,5 @@ def main_env(fading):
     pygame.display.update()
 
 
-#STARTUP HERE
-
-#fadein_screen(SCREEN, 255)
-main_env(True)
+fadein_screen(SCREEN)
+main_env()

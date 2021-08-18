@@ -14,6 +14,6 @@ def display_background(SCREEN, fadeout, darker, opacity):
         SCREEN.blit(BACKGROUND_IMAGE, [0, 0])
 
     if fadeout == True:
-        fadeout_screen(SCREEN, opacity)
+        fadeout_screen(SCREEN)
 
     pygame.display.update()
