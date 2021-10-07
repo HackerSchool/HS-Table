@@ -1,0 +1,128 @@
+{
+  "name": "HS Table",
+  "description": "Uma mesa smart tátil que funciona com base na tecnologia de “light triangulation” e concebida de modo a facilitar a gestão de tarefas do utilizador através de aplicações desenvolvidas para esse fim (e.g. verificar o calendário, tirar notas, etc..), e garantindo ao mesmo tempo uma interface natural, adaptável e fácil de usar.",
+  "members": [
+    "Afonso Certo",
+    "Manuel Graça",
+    "Ana Ajuda",
+    "Isabel Portugal"
+  ],
+  "project_manager": "Afonso Certo",
+  "motivation_links": [
+    "https://www.instructables.com/Touch-Screen-Coffee-Table-DIY-With-32-TV-and-Low-C/"
+  ],
+  "subjects": [
+    "3DMod/Print",
+    "Software Development",
+    "Electronics",
+    "Micro-controller",
+    "Raspberry Pi"
+  ],
+  "etc": "1 Semestre",
+  "initial_observations": [],
+  "tasks": [
+    {
+      "name_task": "Desenvolvimento do Touch",
+      "sub_tasks": [
+        "Testar o algoritmo com o sensor e o arduino.",
+        "Testar qual o melhor arranjo dos leds.",
+        "Testar o Sensor"
+      ],
+      "status": "TO DO"
+    },
+    {
+      "name_task": "Planeamento do Layout e Construção da Mesa",
+      "sub_tasks": [
+        "Adquirir os materiais necessários",
+        "Construir a mesa",
+        "Criar o layout final"
+      ],
+      "status": "TO DO"
+    },
+    {
+      "name_task": "Desenvolvimento do Software",
+      "sub_tasks": [
+        "Resolver possíveis bugs que surjam com a mesa no estado final",
+        "Melhorar a estética"
+      ],
+      "status": "TO DO"
+    },
+    {
+      "status": "ONHOLD",
+      "name_task": "Testar o algoritmo com o sensor e o arduino."
+    },
+    {
+      "name_task": "Testar qual o melhor arranjo dos leds.",
+      "status": "ONHOLD"
+    },
+    {
+      "name_task": "Testar o Sensor",
+      "assignee": [
+        "Afonso Certo"
+      ],
+      "status": "TO DO"
+    },
+    {
+      "name_task": "Adquirir os materiais necessários",
+      "status": "ONHOLD"
+    },
+    {
+      "name_task": "Construir a mesa",
+      "status": "ONHOLD"
+    },
+    {
+      "name_task": "Criar o layout final",
+      "assignee": [
+        "Ana Ajuda"
+      ],
+      "status": "TO DO"
+    },
+    {
+      "name_task": "Resolver possíveis bugs que surjam com a mesa no estado final",
+      "status": "ONHOLD"
+    },
+    {
+      "name_task": "Melhorar a estética",
+      "assignee": [
+        "Manuel Graça"
+      ]
+    }
+  ],
+  "materials": [],
+  "sprints": [
+    {
+      "sprint_number": 0,
+      "description": "",
+      "intervale_date": "2021-09-25 - 2021-10-03",
+      "added": [
+        "Desenvolvimento do Touch",
+        "Planeamento do Layout e Construção da Mesa",
+        "Desenvolvimento do Software",
+        "Testar o Sensor",
+        "Criar o layout final"
+      ],
+      "doing": [],
+      "done": [],
+      "onhold": [
+        "Testar o algoritmo com o sensor e o arduino.",
+        "Testar qual o melhor arranjo dos leds.",
+        "Adquirir os materiais necessários",
+        "Construir a mesa",
+        "Resolver possíveis bugs que surjam com a mesa no estado final"
+      ],
+      "deprecated": [],
+      "observations": []
+    },
+    {
+      "sprint_number": 1,
+      "description": "",
+      "intervale_date": "2021-10-04 - 2021-10-17",
+      "added": [],
+      "doing": [],
+      "done": [],
+      "onhold": [],
+      "deprecated": [],
+      "observations": []
+    }
+  ]
+}
