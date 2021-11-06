@@ -1919,7 +1919,7 @@ def Snooker_BOT(bvb = 0):
                 break
     
             if blackin and (players[player].balls == 7):
-                if balls[0].color != WHITE: #meteu a preta e a branca...
+                if balls is None or balls[0].color != WHITE: #meteu a preta e a branca...
                     running = win(screen, player,players, "o")
                     #print("Player ", (player + 1) % 2 + 1, "Wins!")
                     if running == False:

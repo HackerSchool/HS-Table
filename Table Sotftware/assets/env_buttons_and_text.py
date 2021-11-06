@@ -51,8 +51,8 @@ def env_button(SCREEN, game, text, notbold_font, bold_font, x, y, w, h, text_xpo
         if text == 'TIC TAC TOE':
             dist = int(w*(2 / 10))
 
-            xo = ((SCREEN_WIDTH - w) - 1050) + (w*(2 / 10)) #x de referência
-            yo = (SCREEN_HEIGHT // 2.4) + (h*(3 / 10)) # y de referência
+            xo = ((SCREEN_WIDTH / 4.6)) + (w*(2 / 10)) #x de referência - 1050
+            yo = (SCREEN_HEIGHT / 2.4) + (h*(3 / 10)) # y de referência
             
             if active == False:
                 for i in range (1, 3):
